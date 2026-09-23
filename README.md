@@ -156,10 +156,14 @@ python3 -m chats2notes.cli status
 | **2. Secundário** | **AGY IDE** | 🟡 Em seguida | Desktop Windows/Linux (Sessões e chats da IDE Antigravity) |
 | **3. Terciário** | **OpenCode / Claude Code** | ⚪ Planejado | Sessões locais de outros agentes CLI de pair-programming |
 | **4. Quaternário** | **Web Chats (Gemini & ChatGPT)** | ⚪ Exploração | Ingestão/processamento de exports ou extração de chats web |
+| **5. Quinário** | **NotebookLM** | ⚪ Exploração | Ingestão via ferramentas de terceiros ou exportação/copia+cola manual |
 
 ### 💡 Ideias em Backlog para Marcos Futuros
 * **Filtro por Blacklist de Sessões**: Bloqueio configurável de IDs de sessões sensíveis ou irrelevantes.
 * **Deduplicação por Hash de Conteúdo**: Detecção de prompts repetidos via hash criptográfico (SHA-256).
+* **Ingestão de Diálogos do NotebookLM**: Extração e tratamento de notas e conversas do Google NotebookLM (ferramentas de terceiros ou copia + cola).
+* **Reorganização de Bases Preexistentes**: Padronização e enriquecimento de notas já salvas no SilverBullet ou Obsidian para a nova taxonomia do chats2notes.
+* **Migração e Normalização de Notas Legadas**: Conversores de Notion e Evernote para o ecossistema aberto do SilverBullet.
 
 ---
 

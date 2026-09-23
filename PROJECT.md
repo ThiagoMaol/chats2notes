@@ -35,6 +35,9 @@ Desenvolvedores e engenheiros de software que utilizam agentes de CLI em servido
 
 1. **Filtro por Blacklist de Sessões**: Capacidade de registrar IDs de sessões descartáveis ou confidenciais em lista de bloqueio para serem ignoradas na sincronização e extração.
 2. **Deduplicação por Hash de Conteúdo**: Identificação de turnos repetidos ou comandos redundantes através de cálculo de hash criptográfico (ex: SHA-256) do conteúdo das mensagens.
+3. **Ingestão de Chats do NotebookLM**: Suporte a chats e anotações do Google NotebookLM, seja através de extrações com ferramentas de terceiros ou por meio de exportação e entrada manual (copiar + colar) no vault raw/inbox.
+4. **Reorganização de Conteúdos Preexistentes (SilverBullet & Obsidian)**: Mecanismos para processar notas técnicas já salvas originalmente no próprio SilverBullet ou Obsidian, adaptando-as e reorganizando-as na nova estrutura taxonômica padronizada do projeto.
+5. **Migração e Normalização de Notas Legadas (Notion & Evernote)**: Conversores para importar e tratar conteúdos originários de aplicações proprietárias (como Notion e Evernote), limpando metadados proprietários e integrando-os de forma harmoniosa ao ecossistema aberto do SilverBullet.
 
 ## Contexto técnico
 

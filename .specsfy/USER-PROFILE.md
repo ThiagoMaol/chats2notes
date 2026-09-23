@@ -39,6 +39,9 @@ produção.
 | Interface | Comando CLI de segmentação | Ambos: subcomando dedicado `chats2notes segment` e flag opcional `--segment` em `chats2notes sync` | Pergunta 5 de descoberta SPEC-0003 (atualizado) | 2026-09-23 |
 | Dados | Estratégia de regeneração dos segmentos | Sobrescrever/regenerar toda a pasta de segmentos da sessão a cada execução a partir do `vault/raw`, garantindo consistência com o transcript atualizado | Pergunta 6 de descoberta SPEC-0003 | 2026-09-23 |
 | Dados | Turnos em andamento/incompletos | Ignorar turnos incompletos sem resposta final e só gerar quando a resposta estiver concluída | Pergunta 7 de descoberta SPEC-0003 | 2026-09-23 |
+| Roadmap | Ingestão NotebookLM | Suportar chats do NotebookLM via extração de terceiros ou export manual (copia + cola) | Alinhamento de perspectivas pós SPEC-0003 | 2026-09-23 |
+| Roadmap | Reorganização SilverBullet/Obsidian | Reorganizar notas preexistentes de SilverBullet e Obsidian na nova estrutura do projeto | Alinhamento de perspectivas pós SPEC-0003 | 2026-09-23 |
+| Roadmap | Migração Notion/Evernote | Suportar migração e tratamento de notas de Notion e Evernote para o ambiente SilverBullet | Alinhamento de perspectivas pós SPEC-0003 | 2026-09-23 |
 
 ## Uso pelo setup
 
