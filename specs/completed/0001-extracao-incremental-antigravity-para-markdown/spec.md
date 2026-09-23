@@ -5,7 +5,7 @@
 | Formato | Specsfy/2.0 |
 | ID | SPEC-0001 |
 | Slug | 0001-extracao-incremental-antigravity-para-markdown |
-| Status | Planned |
+| Status | Complete |
 | Effort | 3 |
 | Effort updated at | 2026-09-23 |
 | Effort rationale | Escopo bem delimitado em Python padrão (zero dependências), leitor JSONL, checkpoint atômico e templates Markdown. |
@@ -13,7 +13,7 @@
 | Milestones | M01 (MVP) |
 | Definition Gate | Passed |
 | Plan Gate | Passed |
-| Delivery Gate | Pending |
+| Delivery Gate | Passed |
 | Evidence Contract | 1 |
 | Interface para pessoas | Não — ferramenta de linha de comando (CLI) e automação em segundo plano sem interface gráfica web |
 | Atualizada em | 2026-09-23 |
@@ -373,51 +373,51 @@ category: "Engenharia de Software"
 
 | IDs | BDD de referência | Teste TDD informado pelo BDD | RED observado | GREEN observado | Refactor/regressão |
 | --- | --- | --- | --- | --- | --- |
-| US-001, FR-001, FR-002, FR-003, NFR-001, AC-001 | AC-001 na seção 6 | `tests/test_antigravity_adapter.py:TestAntigravityAdapter.test_initial_extraction` | NotImplementedError (AntigravityAdapter.extract_new_turns) | Pending | Pending |
-| US-001, FR-001, FR-002, FR-003, NFR-001, AC-002 | AC-002 na seção 6 | `tests/test_antigravity_adapter.py:TestAntigravityAdapter.test_incremental_idempotence` | NotImplementedError (AntigravityAdapter.extract_new_turns) | Pending | Pending |
-| US-001, FR-001, FR-002, FR-003, NFR-001, AC-003 | AC-003 na seção 6 | `tests/test_antigravity_adapter.py:TestAntigravityAdapter.test_multi_user_discovery` | NotImplementedError (AntigravityAdapter.discover_sessions) | Pending | Pending |
-| US-001, FR-001, FR-002, FR-003, NFR-001, AC-004 | AC-004 na seção 6 | `tests/test_antigravity_adapter.py:TestAntigravityAdapter.test_resilience_corrupted_jsonl` | NotImplementedError (AntigravityAdapter.extract_new_turns) | Pending | Pending |
+| US-001, FR-001, FR-002, FR-003, NFR-001, AC-001 | AC-001 na seção 6 | `tests/test_antigravity_adapter.py:TestAntigravityAdapter.test_initial_extraction` | NotImplementedError (AntigravityAdapter.extract_new_turns) | Passed (1 Turn extraído com prompt/resposta íntegros) | Passed (11 testes OK sem regressão) |
+| US-001, FR-001, FR-002, FR-003, NFR-001, AC-002 | AC-002 na seção 6 | `tests/test_antigravity_adapter.py:TestAntigravityAdapter.test_incremental_idempotence` | NotImplementedError (AntigravityAdapter.extract_new_turns) | Passed (idempotência incremental confirmada) | Passed (11 testes OK sem regressão) |
+| US-001, FR-001, FR-002, FR-003, NFR-001, AC-003 | AC-003 na seção 6 | `tests/test_antigravity_adapter.py:TestAntigravityAdapter.test_multi_user_discovery` | NotImplementedError (AntigravityAdapter.discover_sessions) | Passed (descoberta multi-usuário em /home) | Passed (11 testes OK sem regressão) |
+| US-001, FR-001, FR-002, FR-003, NFR-001, AC-004 | AC-004 na seção 6 | `tests/test_antigravity_adapter.py:TestAntigravityAdapter.test_resilience_corrupted_jsonl` | NotImplementedError (AntigravityAdapter.extract_new_turns) | Passed (resiliência a linhas corrompidas validada) | Passed (11 testes OK sem regressão) |
 
 ### 12. Plano de testes e rastreabilidade
 
 | Requisito | Cenário BDD | Nível | Arquivo/comando esperado | Evidência |
 | --- | --- | --- | --- | --- |
-| FR-001 | AC-001 | Unidade | `tests/test_antigravity_adapter.py` | Pending |
-| FR-001 | AC-002 | Unidade | `tests/test_antigravity_adapter.py` | Pending |
-| FR-001 | AC-003 | Integração | `tests/test_antigravity_adapter.py` | Pending |
-| FR-001 | AC-004 | Unidade | `tests/test_antigravity_adapter.py` | Pending |
-| FR-002 | AC-001 | Unidade | `tests/test_state.py` | Pending |
-| FR-002 | AC-002 | Unidade | `tests/test_state.py` | Pending |
-| FR-002 | AC-003 | Unidade | `tests/test_state.py` | Pending |
-| FR-002 | AC-004 | Unidade | `tests/test_antigravity_adapter.py` | Pending |
-| FR-003 | AC-001 | Unidade | `tests/test_storage.py` | Pending |
-| FR-003 | AC-002 | Unidade | `tests/test_storage.py` | Pending |
-| FR-003 | AC-003 | Unidade | `tests/test_storage.py` | Pending |
-| FR-003 | AC-004 | Unidade | `tests/test_storage.py` | Pending |
-| NFR-001 | AC-001 | Integração | `PYTHONPATH=src python3 -m unittest discover tests` | Pending |
-| NFR-001 | AC-002 | Integração | `PYTHONPATH=src python3 -m unittest discover tests` | Pending |
-| NFR-001 | AC-003 | Integração | `PYTHONPATH=src python3 -m unittest discover tests` | Pending |
-| NFR-001 | AC-004 | Integração | `PYTHONPATH=src python3 -m unittest discover tests` | Pending |
+| FR-001 | AC-001 | Unidade | `tests/test_antigravity_adapter.py` | Passed |
+| FR-001 | AC-002 | Unidade | `tests/test_antigravity_adapter.py` | Passed |
+| FR-001 | AC-003 | Integração | `tests/test_antigravity_adapter.py` | Passed |
+| FR-001 | AC-004 | Unidade | `tests/test_antigravity_adapter.py` | Passed |
+| FR-002 | AC-001 | Unidade | `tests/test_state.py` | Passed |
+| FR-002 | AC-002 | Unidade | `tests/test_state.py` | Passed |
+| FR-002 | AC-003 | Unidade | `tests/test_state.py` | Passed |
+| FR-002 | AC-004 | Unidade | `tests/test_antigravity_adapter.py` | Passed |
+| FR-003 | AC-001 | Unidade | `tests/test_storage.py` | Passed |
+| FR-003 | AC-002 | Unidade | `tests/test_storage.py` | Passed |
+| FR-003 | AC-003 | Unidade | `tests/test_storage.py` | Passed |
+| FR-003 | AC-004 | Unidade | `tests/test_storage.py` | Passed |
+| NFR-001 | AC-001 | Integração | `PYTHONPATH=src python3 -m unittest discover tests` | Passed |
+| NFR-001 | AC-002 | Integração | `PYTHONPATH=src python3 -m unittest discover tests` | Passed |
+| NFR-001 | AC-003 | Integração | `PYTHONPATH=src python3 -m unittest discover tests` | Passed |
+| NFR-001 | AC-004 | Integração | `PYTHONPATH=src python3 -m unittest discover tests` | Passed |
 
 ### 13. Validações
 
 #### Gate do Ato I — Definição
 
 - **Resultado**: Passed
-- **Comando**: `node .agents/skills/specsfy-04-validate/scripts/validate_spec.mjs specs/planned/0001-extracao-incremental-antigravity-para-markdown/spec.md`
+- **Comando**: `node .agents/skills/specsfy-04-validate/scripts/validate_spec.mjs specs/completed/0001-extracao-incremental-antigravity-para-markdown/spec.md`
 - **Achados**: Nenhum blocker. Formato rígido Specsfy/2.0 e cobertura BDD integral (US-001, FR-001..FR-003, NFR-001 cobertos por 4 ACs).
 
 #### Gate do Ato II — Plano
 
 - **Resultado**: Passed
-- **Comando**: `node .agents/skills/specsfy-05-tasks/scripts/validate_tasks.mjs specs/planned/0001-extracao-incremental-antigravity-para-markdown/spec.md`
+- **Comando**: `node .agents/skills/specsfy-05-tasks/scripts/validate_tasks.mjs specs/completed/0001-extracao-incremental-antigravity-para-markdown/spec.md`
 - **Achados**: Nenhum blocker. Todas as 3 tarefas TDD predecessores (T001, T002, T003) completas e com evidência RED observada, cobrindo integralmente todos os requisitos US-001, FR-001..FR-003, NFR-001 e AC-001..AC-004.
 
 #### Gate do Ato III — Entrega
 
-- **Resultado**: Pending
-- **Comando**: `node .agents/skills/specsfy-06-tdd-bdd/scripts/check_traceability.mjs specs/planned/0001-extracao-incremental-antigravity-para-markdown/spec.md .`
-- **Achados**: Pending.
+- **Resultado**: Passed
+- **Comando**: `node .agents/skills/specsfy-06-tdd-bdd/scripts/check_traceability.mjs specs/completed/0001-extracao-incremental-antigravity-para-markdown/spec.md .`
+- **Achados**: Nenhum blocker. Todas as 7 tarefas concluídas, 11 testes passando (100% GREEN), 9/9 IDs com rastreabilidade plena, QA Passed e Evidence Contract 1 estritamente aprovado.
 
 ### 14. Tarefas
 
@@ -445,37 +445,40 @@ category: "Engenharia de Software"
   - [x] **EVIDENCE**: Registrar saída do teste.
   - [x] **IMPROVE**: Validar tratamento de caracteres especiais no YAML.
 
-- [ ] T004 [CODE] [US-001] Implementar models.py e state.py em src/chats2notes/state.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003 — Depends: T001, T002, T003
-  - [ ] **PREP**: Confirmar classes Turn, Session e StateManager.
-  - [ ] **EXECUTE**: Codificar classes usando apenas a biblioteca padrão.
-  - [ ] **VERIFY**: Executar tests/test_state.py e observar GREEN.
-  - [ ] **VISUAL**: Não aplicável — módulo de dados em backend sem interface visual.
-  - [ ] **EVIDENCE**: Registrar GREEN do teste.
-  - [ ] **IMPROVE**: Validar persistência atômica com os.replace.
+- [x] T004 [CODE] [US-001] Implementar models.py e state.py em src/chats2notes/state.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003 — Depends: T001, T002, T003
+  - [x] **PREP**: Confirmar classes Turn, Session e StateManager.
+  - [x] **EXECUTE**: Codificar classes usando apenas a biblioteca padrão.
+  - [x] **VERIFY**: Executar tests/test_state.py e observar GREEN.
+  - [x] **VISUAL**: Não aplicável — módulo de dados em backend sem interface visual.
+  - [x] **EVIDENCE**: Registrar GREEN do teste (3 testes passando em 0.009s).
+  - [x] **IMPROVE**: Persistência atômica validada com os.replace e os.fsync.
+  <!-- specsfy:evidence {"task": "T004", "refs": ["US-001", "FR-001", "FR-002", "FR-003", "NFR-001", "AC-001", "AC-002", "AC-003"], "files": ["src/chats2notes/models.py", "src/chats2notes/state.py"], "commands": [{"run": "PYTHONPATH=src python3 -m unittest tests/test_state.py", "exit": 0}]} -->
 
-- [ ] T005 [CODE] [US-001] Implementar base.py e antigravity.py em src/chats2notes/adapters/antigravity.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003, AC-004 — Depends: T001, T002, T003, T004
-  - [ ] **PREP**: Confirmar assinatura de BaseAdapter e lógica de parsing de JSONL.
-  - [ ] **EXECUTE**: Implementar descoberta de sessões, multi-usuário e parsing resiliente.
-  - [ ] **VERIFY**: Executar tests/test_antigravity_adapter.py e observar GREEN.
-  - [ ] **VISUAL**: Não aplicável — adaptador de linha de comando sem interface visual.
-  - [ ] **EVIDENCE**: Registrar GREEN do teste.
-  - [ ] **IMPROVE**: Adicionar suporte a caminhos expandidos via Path.home().
+- [x] T005 [CODE] [US-001] Implementar base.py e antigravity.py em src/chats2notes/adapters/antigravity.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003, AC-004 — Depends: T001, T002, T003, T004
+  - [x] **PREP**: Confirmar assinatura de BaseAdapter e lógica de parsing de JSONL.
+  - [x] **EXECUTE**: Implementar descoberta de sessões, multi-usuário e parsing resiliente.
+  - [x] **VERIFY**: Executar tests/test_antigravity_adapter.py e observar GREEN.
+  - [x] **VISUAL**: Não aplicável — adaptador de linha de comando sem interface visual.
+  - [x] **EVIDENCE**: Registrar GREEN do teste (4 testes passando em 0.006s).
+  - [x] **IMPROVE**: Suporte a caminhos multi-usuário em /home e limpeza de tags de sistema implementados.
+  <!-- specsfy:evidence {"task": "T005", "refs": ["US-001", "FR-001", "FR-002", "FR-003", "NFR-001", "AC-001", "AC-002", "AC-003", "AC-004"], "files": ["src/chats2notes/adapters/base.py", "src/chats2notes/adapters/antigravity.py"], "commands": [{"run": "PYTHONPATH=src python3 -m unittest tests/test_antigravity_adapter.py", "exit": 0}]} -->
 
-- [ ] T006 [CODE] [US-001] Implementar storage.py e cli.py em src/chats2notes/storage.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003 — Depends: T001, T002, T003, T004, T005
-  - [ ] **PREP**: Definir comandos argparse e formato do frontmatter YAML.
-  - [ ] **EXECUTE**: Implementar escritor de notas e ponto de entrada da CLI.
-  - [ ] **VERIFY**: Executar tests/test_storage.py e testes de integração CLI observando GREEN.
-  - [ ] **VISUAL**: Não aplicável — interface em linha de comando sem interface visual.
-  - [ ] **EVIDENCE**: Registrar comando de execução e saída.
-  - [ ] **IMPROVE**: Mensagens amigáveis de resumo no terminal.
+- [x] T006 [CODE] [US-001] Implementar storage.py e cli.py em src/chats2notes/storage.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003 — Depends: T001, T002, T003, T004, T005
+  - [x] **PREP**: Definir comandos argparse e formato do frontmatter YAML.
+  - [x] **EXECUTE**: Implementar escritor de notas e ponto de entrada da CLI.
+  - [x] **VERIFY**: Executar tests/test_storage.py e testes de integração CLI observando GREEN.
+  - [x] **VISUAL**: Não aplicável — interface em linha de comando sem interface visual.
+  - [x] **EVIDENCE**: Registrar comando de execução e saída (test_storage.py 3 testes OK, CLI operacional).
+  - [x] **IMPROVE**: Mensagens amigáveis de resumo no terminal e tratamento de colisão de arquivos.
+  <!-- specsfy:evidence {"task": "T006", "refs": ["US-001", "FR-001", "FR-002", "FR-003", "NFR-001", "AC-001", "AC-002", "AC-003"], "files": ["src/chats2notes/storage.py", "src/chats2notes/cli.py"], "commands": [{"run": "PYTHONPATH=src python3 -m unittest tests/test_storage.py", "exit": 0}]} -->
 
-- [ ] T007 [TEST] Executar suíte completa de testes e conferência de rastreabilidade em tests/test_cli.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003, AC-004 — Depends: T004, T005, T006
-  - [ ] **PREP**: Verificar se todos os arquivos estão no lugar correto.
-  - [ ] **EXECUTE**: Rodar `PYTHONPATH=src python3 -m unittest discover tests`.
-  - [ ] **VERIFY**: Confirmar 100% de testes passando sem erros.
-  - [ ] **VISUAL**: Não aplicável — suíte de testes de terminal sem interface visual.
-  - [ ] **EVIDENCE**: Registrar saída de sucesso dos testes.
-  - [ ] **IMPROVE**: Garantir zero dependências externas no código.
+- [x] T007 [TEST] Executar suíte completa de testes e conferência de rastreabilidade em tests/test_cli.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003, AC-004 — Depends: T004, T005, T006
+  - [x] **PREP**: Verificar se todos os arquivos estão no lugar correto.
+  - [x] **EXECUTE**: Rodar `PYTHONPATH=src python3 -m unittest discover tests`.
+  - [x] **VERIFY**: Confirmar 100% de testes passando sem erros.
+  - [x] **VISUAL**: Não aplicável — suíte de testes de terminal sem interface visual.
+  - [x] **EVIDENCE**: Registrar saída de sucesso dos testes (11 testes OK, rastreabilidade 9/9 IDs OK).
+  - [x] **IMPROVE**: Zero dependências externas comprovadas (uso estrito da stdlib Python).
 
 ### 15. Ordem de execução
 
@@ -507,10 +510,10 @@ category: "Engenharia de Software"
 
 ### 18. Definition of Done
 
-- [ ] `Definition Gate` está `Passed`.
-- [ ] `Plan Gate` está `Passed`.
-- [ ] `Delivery Gate` está `Passed`.
-- [ ] Todos os cenários `AC` aplicáveis passam.
-- [ ] Todos os requisitos possuem evidência de verificação.
-- [ ] Todas as tarefas na seção 14 estão concluídas.
-- [ ] Testes e checks estáticos disponíveis passam.
+- [x] `Definition Gate` está `Passed`.
+- [x] `Plan Gate` está `Passed`.
+- [x] `Delivery Gate` está `Passed`.
+- [x] Todos os cenários `AC` aplicáveis passam.
+- [x] Todos os requisitos possuem evidência de verificação.
+- [x] Todas as tarefas na seção 14 estão concluídas.
+- [x] Testes e checks estáticos disponíveis passam.

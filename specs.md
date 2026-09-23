@@ -5,7 +5,7 @@
 
 | Ordem | Spec | Estado | Milestones |
 | --- | --- | --- | --- |
-| 01 | 0001-extracao-incremental-antigravity-para-markdown | Planned | — |
+| 01 | 0001-extracao-incremental-antigravity-para-markdown | Complete | — |
 
 ## Marcos
 

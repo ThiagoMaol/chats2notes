@@ -86,7 +86,7 @@ if (!existsSync(project)) {
   }
   const seen = new Set();
   const packages = rows.filter((row) => { const key = `${row[0]}:${row[1]}:${row[2]}:${row[3]}`; if (seen.has(key)) return false; seen.add(key); return true; });
-  const code = files.filter((path) => [".astro", ".css", ".go", ".js", ".jsx", ".php", ".rb", ".rs", ".ts", ".tsx", ".vue"].includes(extname(path)) || path.endsWith(".blade.php"));
+  const code = files.filter((path) => [".astro", ".css", ".go", ".js", ".jsx", ".php", ".py", ".rb", ".rs", ".ts", ".tsx", ".vue"].includes(extname(path)) || path.endsWith(".blade.php"));
   const testFiles = code.filter((path) => category(relative(project, path)) === "Testes");
   const declared = Object.keys({ ...(rootPackage.dependencies ?? {}), ...(rootPackage.devDependencies ?? {}), ...(composer.require ?? {}), ...(composer["require-dev"] ?? {}) });
   const frameworks = [["astro", "Astro"], ["next", "Next.js"], ["react", "React"], ["laravel/framework", "Laravel"]].flatMap(([key, label]) => declared.includes(key) ? [label] : []);

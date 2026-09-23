@@ -2,7 +2,13 @@
 
 import argparse
 import sys
+from pathlib import Path
 from typing import List, Optional
+
+from chats2notes.adapters.antigravity import AntigravityAdapter
+from chats2notes.models import ExtractionConfig
+from chats2notes.state import StateManager
+from chats2notes.storage import MarkdownStorage
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -28,14 +34,67 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(args: Optional[List[str]] = None) -> int:
-    """CLI main execution function."""
+def run_extract(args: argparse.Namespace) -> int:
+    """Executes incremental extraction workflow."""
+    output_dir = Path(args.output_dir).expanduser()
+    state_file = Path(args.state_file).expanduser() if args.state_file else (Path.home() / ".chats2notes" / "state.json")
+
+    state_mgr = StateManager(state_file)
+    storage = MarkdownStorage(output_dir=output_dir, format_mode=args.format)
+
+    brain_paths = None
+    if args.brain_dir:
+        brain_paths = [Path(p).expanduser() for p in args.brain_dir]
+
+    adapter = AntigravityAdapter()
+    sessions = adapter.discover_sessions(base_paths=brain_paths)
+
+    total_extracted = 0
+    print(f"Sessões descobertas: {len(sessions)}")
+
+    for session in sessions:
+        last_step = state_mgr.get_checkpoint(session.host_user, session.session_id)
+        new_turns = list(adapter.extract_new_turns(session, since_step_index=last_step))
+        if not new_turns:
+            continue
+
+        for turn in new_turns:
+            note_path = storage.write_note(turn)
+            total_extracted += 1
+            state_mgr.update_checkpoint(session.host_user, session.session_id, turn.step_index)
+
+    state_mgr.save()
+    print(f"Extração concluída com sucesso! {total_extracted} novas notas salvas em '{output_dir}'.")
+    return 0
+
+
+def run_status(args: argparse.Namespace) -> int:
+    """Displays monitored sessions and current checkpoints."""
+    state_file = Path(args.state_file).expanduser() if args.state_file else (Path.home() / ".chats2notes" / "state.json")
+    if not state_file.exists():
+        print(f"Nenhum arquivo de estado encontrado em '{state_file}'.")
+        return 0
+
+    state_mgr = StateManager(state_file)
+    print(f"Arquivo de estado: {state_file}")
+    print(f"Total de checkpoints registrados: {len(state_mgr._state)}")
+    for key, step in sorted(state_mgr._state.items()):
+        print(f"  - {key}: último step_index={step}")
+    return 0
+
+
+def main(argv: Optional[List[str]] = None) -> int:
+    """CLI main entry point."""
     parser = build_parser()
-    parsed = parser.parse_args(args)
-    if not parsed.command:
+    args = parser.parse_args(argv)
+
+    if args.command == "extract":
+        return run_extract(args)
+    elif args.command == "status":
+        return run_status(args)
+    else:
         parser.print_help()
         return 0
-    return 0
 
 
 if __name__ == "__main__":
