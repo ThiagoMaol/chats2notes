@@ -51,23 +51,26 @@ O sistema adota o padrão **Adaptador de CLI ➡️ Extrator Incremental ➡️ 
 
 ```mermaid
 flowchart LR
-    subgraph Fontes ["Fontes (CLI Adapters)"]
-        A1["🟢 Antigravity CLI\n(~/.gemini/.../transcript_full.jsonl)"]
-        A2["🟡 OpenCode\n(Em breve)"]
-        A3["⚪ Claude Code / Outros\n(Roadmap)"]
+    subgraph Fontes ["Fontes (Adapters & Ingestores)"]
+        A1["🟢 1. Antigravity CLI\n(Linux Server - MVP)"]
+        A2["🟡 2. AGY IDE\n(Windows / Desktop)"]
+        A3["⚪ 3. OpenCode & Claude Code\n(CLI Agents)"]
+        A4["⚪ 4. Web Chats\n(Gemini & ChatGPT)"]
     end
 
-    A1 & A2 & A3 --> B["🔍 Adaptador & Extrator\n(Watermark / checkpoint.json)"]
+    A1 & A2 & A3 & A4 --> B["🔍 Adaptador & Extrator\n(Watermark / checkpoint.json)"]
     B --> C["🤖 Agente Curador / LLM\n(Filtra ruídos, sintetiza e tagueia)"]
     C --> D["📚 SilverBullet Space / Obsidian Vault\n(Notas .md com YAML enriquecido)"]
 ```
 
 ### Componentes Principais
 
-1. **Adaptadores de CLI (`src/adapters/`)**:
+1. **Adaptadores de CLI & Ingestores (`src/adapters/`)**:
    - Interface base padronizada (`BaseAdapter`) para descoberta de sessões e leitura de turnos de diálogo.
    - **AntigravityAdapter**: Lê os arquivos `transcript_full.jsonl` preservando mensagens completas em `~/.gemini/antigravity-cli/brain/`.
-   - **OpenCodeAdapter** *(próximo)*, **ClaudeCodeAdapter**, etc.
+   - **AgyIdeAdapter**: Localiza e consome as sessões da IDE no Windows/Linux.
+   - **OpenCodeAdapter** e **ClaudeCodeAdapter**: Consome sessões locais de outros agentes CLI.
+   - **WebChatAdapter**: Ingestão de exports ou chats de interfaces web (Gemini Web e ChatGPT).
 
 2. **Gerenciador de Estado Incremental (`src/state.py`)**:
    - Mantém o arquivo `checkpoint.json` rastreando a marca d'água (`last_processed_step` ou timestamp) por sessão e adaptador, garantindo zero reprocessamentos ou duplicações.
@@ -82,20 +85,20 @@ flowchart LR
    - Suporte a tags, categorias e referências cruzadas.
 
 5. **Multiplataforma por Padrão**:
-   - Foco primário: **Servidores Linux** (onde residem os históricos de maior volume).
+   - Foco primário: **Servidores Linux** (onde residem os históricos de maior volume do Antigravity CLI).
    - Foco secundário: **Windows** (ambientes desktop com AGY IDE / SilverBullet Plus).
    - Manipulação de caminhos agnóstica via `pathlib.Path`.
 
 ---
 
-## 🗺️ Roadmap de Adaptadores
+## 🗺️ Roadmap de Prioridades e Fontes
 
-| Agente CLI | Status | Local de Armazenamento |
-| :--- | :--- | :--- |
-| **Antigravity CLI** | 🟢 Foco Atual (MVP) | `~/.gemini/antigravity-cli/brain/<uuid>/.../transcript_full.jsonl` |
-| **OpenCode** | 🟡 Próximo | Sessões locais do OpenCode |
-| **Claude Code** | ⚪ Planejado | Histórico de sessões do Claude Code |
-| **Codex / Outros** | ⚪ Planejado | Sessões locais correspondentes |
+| Nível / Prioridade | Fonte / Agente | Status | Descrição / Armazenamento |
+| :--- | :--- | :--- | :--- |
+| **1. Primário (MVP)** | **Antigravity CLI** | 🟢 Foco Atual | Servidor Linux (`~/.gemini/antigravity-cli/brain/`) |
+| **2. Secundário** | **AGY IDE** | 🟡 Em seguida | Desktop Windows/Linux (Sessões e chats da IDE Antigravity) |
+| **3. Terciário** | **OpenCode / Claude Code** | ⚪ Planejado | Sessões locais de outros agentes CLI de pair-programming |
+| **4. Quaternário** | **Web Chats (Gemini & ChatGPT)** | ⚪ Exploração | Ingestão/processamento de exports ou extração de chats web |
 
 ---
 
