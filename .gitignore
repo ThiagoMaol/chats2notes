@@ -1,0 +1,39 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment variables & secrets
+.env
+.env.*
+*.secret
+
+# State and checkpoint local files
+checkpoint.json
+*.checkpoint.json
+
+# Local output / notes generated during development
+/output/
+/inbox/
+/notes/
+
+# Logs & temp
+*.log
+.temp/
+.cache/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
