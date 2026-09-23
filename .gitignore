@@ -3,11 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Virtual environments
+# Virtual environments & node
 .venv/
 venv/
 env/
 ENV/
+node_modules/
 
 # Environment variables & secrets
 .env
