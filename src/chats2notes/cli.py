@@ -8,6 +8,7 @@ from typing import List, Optional
 from chats2notes.adapters.antigravity import AntigravityAdapter
 from chats2notes.filter import WorkspaceFilter
 from chats2notes.models import ExtractionConfig
+from chats2notes.segmenter import TranscriptSegmenter
 from chats2notes.state import StateManager
 from chats2notes.storage import MarkdownStorage
 from chats2notes.sync import RawSynchronizer
@@ -25,10 +26,18 @@ def build_parser() -> argparse.ArgumentParser:
     sync_parser = subparsers.add_parser("sync", help="Synchronize raw agent transcripts to vault/raw")
     sync_parser.add_argument("--brain-dir", action="append", help="Directory of agent brains (can specify multiple)")
     sync_parser.add_argument("--raw-dir", "--inbox-dir", dest="raw_dir", default="./vault/raw", help="Destination directory for raw transcripts (default: ./vault/raw)")
+    sync_parser.add_argument("--segments-dir", default="./vault/segments", help="Destination directory for segmented turns when --segment is used")
+    sync_parser.add_argument("--segment", action="store_true", help="Automatically segment raw transcripts into pairs after sync")
     sync_parser.add_argument("--ignore-workspace", action="append", help="Workspace path to ignore (can specify multiple)")
     sync_parser.add_argument("--all-users", action="store_true", help="Scan multi-user directories in /home")
 
-    # extract subcommand (Stage 2: Incremental Markdown Generation)
+    # segment subcommand (Stage 2: Deterministic Pair Segmentation)
+    segment_parser = subparsers.add_parser("segment", help="Segment raw transcripts into ordered turn pairs and audit files")
+    segment_parser.add_argument("--raw-dir", default="./vault/raw", help="Source directory containing raw transcripts (default: ./vault/raw)")
+    segment_parser.add_argument("--segments-dir", default="./vault/segments", help="Destination directory for segmented pairs (default: ./vault/segments)")
+    segment_parser.add_argument("--session", help="Optional specific session ID to segment")
+
+    # extract subcommand (Stage 3: Incremental Markdown Generation)
     extract_parser = subparsers.add_parser("extract", help="Extract notes incrementally from agent logs")
     extract_parser.add_argument("--brain-dir", action="append", help="Directory of agent brains (can specify multiple)")
     extract_parser.add_argument("--output-dir", default="./notes", help="Destination directory for markdown notes")
@@ -63,6 +72,27 @@ def run_sync(args: argparse.Namespace) -> int:
     print(f"Sincronização concluída: {result.discovered} sessões avaliadas, "
           f"{result.synced} sincronizadas, {result.updated} atualizadas, "
           f"{result.skipped} inalteradas, {result.ignored} ignoradas por workspace.")
+
+    if getattr(args, "segment", False):
+        segments_dir = Path(getattr(args, "segments_dir", "./vault/segments")).expanduser()
+        segmenter = TranscriptSegmenter(raw_dir=raw_dir, segments_dir=segments_dir)
+        stats = segmenter.segment_all()
+        print(f"Segmentação automática concluída: {stats['sessions_processed']} sessões processadas, "
+              f"{stats['turns_generated']} pares gerados em '{segments_dir}'.")
+
+    return 0
+
+
+def run_segment(args: argparse.Namespace) -> int:
+    """Executes deterministic pair segmentation from vault/raw to vault/segments."""
+    raw_dir = Path(args.raw_dir).expanduser()
+    segments_dir = Path(args.segments_dir).expanduser()
+
+    segmenter = TranscriptSegmenter(raw_dir=raw_dir, segments_dir=segments_dir)
+    stats = segmenter.segment_all(target_session=args.session)
+
+    print(f"Segmentação concluída: {stats['sessions_processed']} sessões processadas, "
+          f"{stats['turns_generated']} pares gerados em '{segments_dir}'.")
     return 0
 
 
@@ -122,6 +152,8 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     if args.command == "sync":
         return run_sync(args)
+    elif args.command == "segment":
+        return run_segment(args)
     elif args.command == "extract":
         return run_extract(args)
     elif args.command == "status":

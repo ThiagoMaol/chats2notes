@@ -107,6 +107,9 @@ flowchart LR
 # Sincronização padrão (descobre sessões e salva em vault/raw)
 python3 -m chats2notes.cli sync
 
+# Sincronizar e já executar a segmentação de pares automaticamente
+python3 -m chats2notes.cli sync --segment
+
 # Especificando diretório personalizado e ignorando workspaces extras
 python3 -m chats2notes.cli sync \
   --raw-dir ./vault/raw \
@@ -114,7 +117,23 @@ python3 -m chats2notes.cli sync \
   --all-users
 ```
 
-### 2. Extrair Notas Markdown
+### 2. Segmentar Pares de Perguntas e Respostas (Fase 2)
+```bash
+# Segmenta todas as sessões sincronizadas em vault/raw para vault/segments
+python3 -m chats2notes.cli segment
+
+# Segmentar apenas uma sessão específica com caminhos customizados
+python3 -m chats2notes.cli segment \
+  --raw-dir ./vault/raw \
+  --segments-dir ./vault/segments \
+  --session <session_id>
+```
+
+Cada turno gera:
+- `000X.md`: Markdown sequencial com frontmatter e apenas o texto visível da resposta.
+- `000X.audit.json`: Conteúdo bruto técnico de auditoria (`thinking`, `tool_calls`).
+
+### 3. Extrair Notas Markdown (Fase 3 - Curadoria)
 ```bash
 # Extração incremental gerando notas para SilverBullet / Obsidian
 python3 -m chats2notes.cli extract \
@@ -122,7 +141,7 @@ python3 -m chats2notes.cli extract \
   --format silverbullet
 ```
 
-### 3. Visualizar Status e Checkpoints
+### 4. Visualizar Status e Checkpoints
 ```bash
 python3 -m chats2notes.cli status
 ```

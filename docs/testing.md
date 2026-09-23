@@ -3,7 +3,7 @@
 <!-- specsfy:documentator:start -->
 ## Resumo
 
-- Arquivos de teste: 8.
+- Arquivos de teste: 10.
 - Runner: não identificado.
 - Scripts: não declarados.
 
@@ -13,6 +13,8 @@
 | tests/test_antigravity_adapter.py |
 | tests/test_cli.py |
 | tests/test_filter.py |
+| tests/test_segmenter.py |
+| tests/test_segmenter_cli.py |
 | tests/test_state.py |
 | tests/test_storage.py |
 | tests/test_sync.py |

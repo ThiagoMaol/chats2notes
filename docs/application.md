@@ -19,6 +19,7 @@ Relação: relaciona cada arquivo observado à sua superfície.
 | Outras fontes | src/chats2notes/cli.py | entry |
 | Outras fontes | src/chats2notes/filter.py | WorkspaceFilter |
 | Outras fontes | src/chats2notes/models.py | Turn, SessionSummary, ExtractionConfig |
+| Outras fontes | src/chats2notes/segmenter.py | SegmentTurn, TranscriptSegmenter |
 | Outras fontes | src/chats2notes/state.py | StateManager |
 | Outras fontes | src/chats2notes/storage.py | MarkdownStorage |
 | Outras fontes | src/chats2notes/sync.py | SyncResult, RawSynchronizer |
@@ -26,6 +27,8 @@ Relação: relaciona cada arquivo observado à sua superfície.
 | Testes | tests/test_antigravity_adapter.py | TestAntigravityAdapter |
 | Testes | tests/test_cli.py | TestCLIIntegration |
 | Testes | tests/test_filter.py | TestFilter |
+| Testes | tests/test_segmenter.py | TestTranscriptSegmenter |
+| Testes | tests/test_segmenter_cli.py | CLI, TestSegmenterCLI |
 | Testes | tests/test_state.py | TestStateManager |
 | Testes | tests/test_storage.py | TestMarkdownStorage |
 | Testes | tests/test_sync.py | TestSync |

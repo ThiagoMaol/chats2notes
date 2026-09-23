@@ -16,7 +16,7 @@ Desenvolvedores e engenheiros de software que utilizam agentes de CLI em servido
 
 1. **Pipeline em Três Fases**:
    - **Fase 1 (Sincronização Raw)**: O comando `chats2notes sync` copia com fidelidade integral e incremental os arquivos `transcript_full.jsonl` de cada sessão do `brain/` para `vault/raw/<user>/<session_id>/`. O diretório `vault/raw` é imutável para o processamento interno da aplicação, mas dinamicamente sincronizado com os brains externos quando um chat continuar ativo e crescer na fonte.
-   - **Fase 2 (Segmentação em Pares)**: Processamento determinístico via script puro (sem IA) que segmenta cada log do `vault/raw` em pares sequenciais de `[prompt do usuário] + [resposta da LLM]` com metadados e numeração ordenada.
+   - **Fase 2 (Segmentação em Pares)**: Processamento determinístico via script puro (sem IA) que segmenta cada log do `vault/raw` em pares sequenciais de `[prompt do usuário] + [resposta da LLM]` com metadados e numeração ordenada (`0001.md`, `0002.md`) e arquivos técnicos paralelos de auditoria (`0001.audit.json`). Suporta subcomando dedicado `chats2notes segment` e flag encadeada `chats2notes sync --segment`.
    - **Fase 3 (Curadoria e Geração de Notas Humanizadas)**: Síntese inteligente das notas em Markdown em `vault/notas/`, orientada pela skill `humanizer` para produzir texto direto, limpo e sem clichês de IA.
 2. **Filtro de Exclusão de Workspace**: Descarta automaticamente sessões cujo workspace coincida com o próprio repositório `chats2notes` ou com diretórios configurados em `--ignore-workspace`, prevenindo auto-ingestão e loops recursivos.
 3. **Leitura Incremental de Transcripts**: Monitora e extrai turnos completos de diálogo a partir de logs estruturados locais (`transcript_full.jsonl`).

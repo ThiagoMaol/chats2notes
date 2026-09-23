@@ -36,7 +36,7 @@ class TestSync(unittest.TestCase):
     def tearDown(self):
         self.temp_dir.cleanup()
 
-    # SPECSFY: US-002 FR-004 FR-005 FR-006 NFR-002 AC-005
+    # SPEC-0002: US-002 FR-004 FR-005 FR-006 NFR-002 AC-005
     def test_initial_sync(self):
         """Initial sync copies raw transcript into vault/inbox preserving contents."""
         synced = self.synchronizer.sync_session(self.session)
@@ -50,7 +50,7 @@ class TestSync(unittest.TestCase):
             source_content = f.read()
         self.assertEqual(target_content, source_content)
 
-    # SPECSFY: US-002 FR-004 FR-005 FR-006 NFR-002 AC-006
+    # SPEC-0002: US-002 FR-004 FR-005 FR-006 NFR-002 AC-006
     def test_idempotent_sync(self):
         """Unchanged files are skipped and not re-copied."""
         self.synchronizer.sync_session(self.session)
@@ -58,7 +58,7 @@ class TestSync(unittest.TestCase):
         synced_again = self.synchronizer.sync_session(self.session)
         self.assertFalse(synced_again)
 
-    # SPECSFY: US-002 FR-004 FR-005 FR-006 NFR-002 AC-008
+    # SPEC-0002: US-002 FR-004 FR-005 FR-006 NFR-002 AC-008
     def test_incremental_append_sync(self):
         """When source file gets new lines, target is updated with new contents."""
         self.synchronizer.sync_session(self.session)

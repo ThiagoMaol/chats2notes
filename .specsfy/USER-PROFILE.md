@@ -32,6 +32,13 @@ produção.
 | Interface | Telas e navegação | Interface CLI (linha de comando) e automação em segundo plano | README.md / PROJECT.md | 2026-09-23 |
 | Tecnologia | Stack de execução e testes | Python 3 standard library (zero dependências) e unittest | Pergunta 2 do setup | 2026-09-23 |
 | IA e Integrações | Modelo de curadoria e cota | Híbrido: cota nativa do Antigravity CLI no chat + chave opcional para cron | Pergunta 3 do setup | 2026-09-23 |
+| Dados | Destino dos segmentos de pares | `vault/segments/<user>/<session_id>/` | Pergunta 1 de descoberta SPEC-0003 | 2026-09-23 |
+| Dados | Formato dos segmentos de pares | Markdown sequencial `0001.md` com frontmatter YAML e seções de Entrada e Resposta | Pergunta 2 de descoberta SPEC-0003 | 2026-09-23 |
+| Dados | Composição da resposta e auditoria | Resposta da LLM contém apenas texto visível final; conteúdo bruto (thinking + tool_calls) é salvo em arquivo paralelo de auditoria | Pergunta 3 de descoberta SPEC-0003 | 2026-09-23 |
+| Dados | Formato do arquivo de auditoria | JSON estruturado com sufixo `.audit.json` (ex: `0001.audit.json`) | Pergunta 4 de descoberta SPEC-0003 | 2026-09-23 |
+| Interface | Comando CLI de segmentação | Ambos: subcomando dedicado `chats2notes segment` e flag opcional `--segment` em `chats2notes sync` | Pergunta 5 de descoberta SPEC-0003 (atualizado) | 2026-09-23 |
+| Dados | Estratégia de regeneração dos segmentos | Sobrescrever/regenerar toda a pasta de segmentos da sessão a cada execução a partir do `vault/raw`, garantindo consistência com o transcript atualizado | Pergunta 6 de descoberta SPEC-0003 | 2026-09-23 |
+| Dados | Turnos em andamento/incompletos | Ignorar turnos incompletos sem resposta final e só gerar quando a resposta estiver concluída | Pergunta 7 de descoberta SPEC-0003 | 2026-09-23 |
 
 ## Uso pelo setup
 
