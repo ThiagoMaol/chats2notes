@@ -5,8 +5,8 @@
 
 | Tipo | Quantidade |
 | --- | --- |
-| Código | 16 |
-| Testes | 5 |
+| Código | 21 |
+| Testes | 8 |
 
 ## Diagramas
 

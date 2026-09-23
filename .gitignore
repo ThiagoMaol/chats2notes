@@ -23,6 +23,7 @@ checkpoint.json
 /output/
 /inbox/
 /notes/
+/vault/
 
 # Logs & temp
 *.log

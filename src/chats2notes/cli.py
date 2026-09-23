@@ -6,9 +6,11 @@ from pathlib import Path
 from typing import List, Optional
 
 from chats2notes.adapters.antigravity import AntigravityAdapter
+from chats2notes.filter import WorkspaceFilter
 from chats2notes.models import ExtractionConfig
 from chats2notes.state import StateManager
 from chats2notes.storage import MarkdownStorage
+from chats2notes.sync import InboxSynchronizer
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -19,7 +21,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command")
 
-    # extract subcommand
+    # sync subcommand (Stage 1: Raw Inbox Synchronization)
+    sync_parser = subparsers.add_parser("sync", help="Synchronize raw agent transcripts to vault/inbox")
+    sync_parser.add_argument("--brain-dir", action="append", help="Directory of agent brains (can specify multiple)")
+    sync_parser.add_argument("--inbox-dir", default="./vault/inbox", help="Destination directory for raw inbox transcripts")
+    sync_parser.add_argument("--ignore-workspace", action="append", help="Workspace path to ignore (can specify multiple)")
+    sync_parser.add_argument("--all-users", action="store_true", help="Scan multi-user directories in /home")
+
+    # extract subcommand (Stage 2: Incremental Markdown Generation)
     extract_parser = subparsers.add_parser("extract", help="Extract notes incrementally from agent logs")
     extract_parser.add_argument("--brain-dir", action="append", help="Directory of agent brains (can specify multiple)")
     extract_parser.add_argument("--output-dir", default="./notes", help="Destination directory for markdown notes")
@@ -32,6 +41,29 @@ def build_parser() -> argparse.ArgumentParser:
     status_parser.add_argument("--state-file", help="Path to state checkpoint file")
 
     return parser
+
+
+def run_sync(args: argparse.Namespace) -> int:
+    """Executes raw transcript synchronization to vault/inbox."""
+    inbox_dir = Path(args.inbox_dir).expanduser()
+
+    brain_paths = None
+    if args.brain_dir:
+        brain_paths = [Path(p).expanduser() for p in args.brain_dir]
+
+    adapter = AntigravityAdapter()
+    sessions = adapter.discover_sessions(base_paths=brain_paths)
+
+    ignored_workspaces = args.ignore_workspace if args.ignore_workspace else []
+    ws_filter = WorkspaceFilter(ignored_workspaces=ignored_workspaces)
+    synchronizer = InboxSynchronizer(inbox_dir)
+
+    result = synchronizer.sync_all(sessions, workspace_filter=ws_filter)
+
+    print(f"Sincronização concluída: {result.discovered} sessões avaliadas, "
+          f"{result.synced} sincronizadas, {result.updated} atualizadas, "
+          f"{result.skipped} inalteradas, {result.ignored} ignoradas por workspace.")
+    return 0
 
 
 def run_extract(args: argparse.Namespace) -> int:
@@ -88,7 +120,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
 
-    if args.command == "extract":
+    if args.command == "sync":
+        return run_sync(args)
+    elif args.command == "extract":
         return run_extract(args)
     elif args.command == "status":
         return run_status(args)

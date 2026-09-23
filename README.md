@@ -45,49 +45,74 @@ page where tag = "ai-notes" and agent = "antigravity" order by created desc rend
 
 ---
 
-## 🏗️ Arquitetura
+## 🏗️ Arquitetura em Duas Etapas
 
-O sistema adota o padrão **Adaptador de CLI ➡️ Extrator Incremental ➡️ Curador Inteligente ➡️ Base de Notas**:
+O sistema opera em duas etapas complementares para garantir integridade e separação de responsabilidades:
 
 ```mermaid
 flowchart LR
-    subgraph Fontes ["Fontes (Adapters & Ingestores)"]
-        A1["🟢 1. Antigravity CLI\n(Linux Server - MVP)"]
-        A2["🟡 2. AGY IDE\n(Windows / Desktop)"]
-        A3["⚪ 3. OpenCode & Claude Code\n(CLI Agents)"]
-        A4["⚪ 4. Web Chats\n(Gemini & ChatGPT)"]
+    subgraph Fontes ["Fontes (Adapters)"]
+        A1["🟢 Antigravity CLI\n(~/.gemini/.../brain/)"]
+        A2["🟡 AGY IDE / Outros CLIs"]
     end
 
-    A1 & A2 & A3 & A4 --> B["🔍 Adaptador & Extrator\n(Watermark / checkpoint.json)"]
-    B --> C["🤖 Agente Curador / LLM\n(Filtra ruídos, sintetiza e tagueia)"]
-    C --> D["📚 SilverBullet Space / Obsidian Vault\n(Notas .md com YAML enriquecido)"]
+    subgraph Etapa1 ["Etapa 1: Sincronização Raw (chats2notes sync)"]
+        Flt["🛡️ Workspace Filter\n(ignora chats2notes e pastas customizadas)"]
+        Sync["⚡ InboxSynchronizer\n(cópia atômica e incremental)"]
+        Inbox["📦 vault/inbox/<user>/<session_id>/\n- transcript_full.jsonl\n- session_info.json"]
+    end
+
+    subgraph Etapa2 ["Etapa 2: Curadoria & Notas (chats2notes extract / IA)"]
+        Curator["🤖 Curador / LLM"]
+        Vault["📚 vault/notas/\n(Markdown para SilverBullet & Obsidian)"]
+    end
+
+    A1 & A2 --> Flt
+    Flt --> Sync
+    Sync --> Inbox
+    Inbox --> Curator
+    Curator --> Vault
 ```
 
-### Componentes Principais
+### 1. Etapa 1: Sincronização Raw (`vault/inbox/`)
+- O comando `chats2notes sync` descobre sessões locais e copia os arquivos originais `transcript_full.jsonl` diretamente para `vault/inbox/<user>/<session_id>/`.
+- **Fonte da Verdade Local**: Mantém o log original íntegro sem qualquer pré-processamento destrutivo.
+- **Idempotência**: Compara tamanho de arquivos e metadados, transferindo somente novos bytes ou novas sessões.
+- **Filtro de Workspace**: Ignora automaticamente sessões do próprio repositório `chats2notes` e diretórios informados via `--ignore-workspace`, impedindo loops de auto-ingestão.
+- **Privacidade**: Todo o diretório `/vault/` é estritamente ignorado no `.gitignore`.
 
-1. **Adaptadores de CLI & Ingestores (`src/adapters/`)**:
-   - Interface base padronizada (`BaseAdapter`) para descoberta de sessões e leitura de turnos de diálogo.
-   - **AntigravityAdapter**: Lê os arquivos `transcript_full.jsonl` preservando mensagens completas em `~/.gemini/antigravity-cli/brain/`.
-   - **AgyIdeAdapter**: Localiza e consome as sessões da IDE no Windows/Linux.
-   - **OpenCodeAdapter** e **ClaudeCodeAdapter**: Consome sessões locais de outros agentes CLI.
-   - **WebChatAdapter**: Ingestão de exports ou chats de interfaces web (Gemini Web e ChatGPT).
+### 2. Etapa 2: Curadoria e Geração de Notas (`vault/notas/`)
+- Lê os arquivos sincronizados a partir de `vault/inbox/`.
+- Extrai os turnos de diálogo, descarta ruídos operacionais e sintetiza notas estruturadas com YAML frontmatter.
 
-2. **Gerenciador de Estado Incremental (`src/state.py`)**:
-   - Mantém o arquivo `checkpoint.json` rastreando a marca d'água (`last_processed_step` ou timestamp) por sessão e adaptador, garantindo zero reprocessamentos ou duplicações.
+---
 
-3. **Filtro & Curador Inteligente (`src/curator.py`)**:
-   - Descarta ruídos operacionais (comandos triviais, correções pontuais de sintaxe).
-   - Identifica conhecimento de alto valor (arquiteturas, tutoriais, explicações conceituais).
-   - Sintetiza notas concisas com metadados estruturados.
+## 🚀 Como Usar
 
-4. **Gerador de Notas (`src/storage.py`)**:
-   - Escreve os arquivos `.md` no diretório do seu Space/Vault.
-   - Suporte a tags, categorias e referências cruzadas.
+### 1. Sincronizar Logs Brutos para o Inbox Local
+```bash
+# Sincronização padrão (descobre sessões e salva em vault/inbox)
+python3 -m chats2notes.cli sync
 
-5. **Multiplataforma por Padrão**:
-   - Foco primário: **Servidores Linux** (onde residem os históricos de maior volume do Antigravity CLI).
-   - Foco secundário: **Windows** (ambientes desktop com AGY IDE / SilverBullet Plus).
-   - Manipulação de caminhos agnóstica via `pathlib.Path`.
+# Especificando diretório personalizado e ignorando workspaces extras
+python3 -m chats2notes.cli sync \
+  --inbox-dir ./vault/inbox \
+  --ignore-workspace /caminho/do/projeto/privado \
+  --all-users
+```
+
+### 2. Extrair Notas Markdown
+```bash
+# Extração incremental gerando notas para SilverBullet / Obsidian
+python3 -m chats2notes.cli extract \
+  --output-dir ./vault/notas \
+  --format silverbullet
+```
+
+### 3. Visualizar Status e Checkpoints
+```bash
+python3 -m chats2notes.cli status
+```
 
 ---
 
@@ -99,6 +124,10 @@ flowchart LR
 | **2. Secundário** | **AGY IDE** | 🟡 Em seguida | Desktop Windows/Linux (Sessões e chats da IDE Antigravity) |
 | **3. Terciário** | **OpenCode / Claude Code** | ⚪ Planejado | Sessões locais de outros agentes CLI de pair-programming |
 | **4. Quaternário** | **Web Chats (Gemini & ChatGPT)** | ⚪ Exploração | Ingestão/processamento de exports ou extração de chats web |
+
+### 💡 Ideias em Backlog para Marcos Futuros
+* **Filtro por Blacklist de Sessões**: Bloqueio configurável de IDs de sessões sensíveis ou irrelevantes.
+* **Deduplicação por Hash de Conteúdo**: Detecção de prompts repetidos via hash criptográfico (SHA-256).
 
 ---
 

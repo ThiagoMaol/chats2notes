@@ -6,6 +6,7 @@
 | Ordem | Spec | Estado | Milestones |
 | --- | --- | --- | --- |
 | 01 | 0001-extracao-incremental-antigravity-para-markdown | Complete | — |
+| 02 | 0002-sincronizacao-inbox-e-filtro-workspace | Complete | — |
 
 ## Marcos
 
