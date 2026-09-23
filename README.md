@@ -133,13 +133,26 @@ Cada turno gera:
 - `000X.md`: Markdown sequencial com frontmatter e apenas o texto visível da resposta.
 - `000X.audit.json`: Conteúdo bruto técnico de auditoria (`thinking`, `tool_calls`).
 
-### 3. Extrair Notas Markdown (Fase 3 - Curadoria)
+### 3. Curadoria Inteligente e Síntese de Notas Atômicas (Fase 3 - Curadoria)
 ```bash
-# Extração incremental gerando notas para SilverBullet / Obsidian
-python3 -m chats2notes.cli extract \
-  --output-dir ./vault/notas \
-  --format silverbullet
+# Curadoria incremental padrão (lê vault/segments/ e grava em vault/notas/)
+python3 -m chats2notes.cli curate
+
+# Curadoria customizada com tags de projeto
+python3 -m chats2notes.cli curate \
+  --segments-dir ./vault/segments \
+  --notes-dir ./vault/notas \
+  --project chats2notes
+
+# Reprocessar todos os segmentos forçadamente (recriando o manifesto vault/.curated.json)
+python3 -m chats2notes.cli curate --force
 ```
+
+A etapa de curadoria produz notas atômicas em formato plano (100% sem subpastas):
+* **FAQ / Conceitos Gerais**: Resumo conciso em tópicos no estilo `humanizer`, divisor horizontal `---` e o diálogo completo original preservado abaixo.
+* **Pair-Programming**: Pergunta atômica destacada, alternativa selecionada comentada, divisor `---` e o cardápio original completo de alternativas.
+* **Vocabulário Controlado & Tags de Ecossistema**: Extrai tags canônicas normalizadas e associa automaticamente ecossistemas (ex: distros Linux -> `linux`).
+* **Memória de Descarte e Idempotência**: Registra turnos avaliados, descartes e notas criadas em `vault/.curated.json`.
 
 ### 4. Visualizar Status e Checkpoints
 ```bash

@@ -17,6 +17,7 @@ Relação: relaciona cada arquivo observado à sua superfície.
 | Outras fontes | src/chats2notes/adapters/antigravity.py | AntigravityAdapter |
 | Outras fontes | src/chats2notes/adapters/base.py | for, BaseAdapter |
 | Outras fontes | src/chats2notes/cli.py | entry |
+| Outras fontes | src/chats2notes/curator.py | CuratedManifest, TagTaxonomy, NoiseDetector, QuestionSplitter, NoteDiagrammer, CuratorEngine |
 | Outras fontes | src/chats2notes/filter.py | WorkspaceFilter |
 | Outras fontes | src/chats2notes/models.py | Turn, SessionSummary, ExtractionConfig |
 | Outras fontes | src/chats2notes/segmenter.py | SegmentTurn, TranscriptSegmenter |
@@ -26,6 +27,8 @@ Relação: relaciona cada arquivo observado à sua superfície.
 | Testes | tests/__init__.py | — |
 | Testes | tests/test_antigravity_adapter.py | TestAntigravityAdapter |
 | Testes | tests/test_cli.py | TestCLIIntegration |
+| Testes | tests/test_curator.py | TestCuratorEngine |
+| Testes | tests/test_curator_cli.py | TestCuratorCLI |
 | Testes | tests/test_filter.py | TestFilter |
 | Testes | tests/test_segmenter.py | TestTranscriptSegmenter |
 | Testes | tests/test_segmenter_cli.py | CLI, TestSegmenterCLI |

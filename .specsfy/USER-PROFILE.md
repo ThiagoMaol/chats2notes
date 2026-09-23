@@ -42,6 +42,20 @@ produção.
 | Roadmap | Ingestão NotebookLM | Suportar chats do NotebookLM via extração de terceiros ou export manual (copia + cola) | Alinhamento de perspectivas pós SPEC-0003 | 2026-09-23 |
 | Roadmap | Reorganização SilverBullet/Obsidian | Reorganizar notas preexistentes de SilverBullet e Obsidian na nova estrutura do projeto | Alinhamento de perspectivas pós SPEC-0003 | 2026-09-23 |
 | Roadmap | Migração Notion/Evernote | Suportar migração e tratamento de notas de Notion e Evernote para o ambiente SilverBullet | Alinhamento de perspectivas pós SPEC-0003 | 2026-09-23 |
+| Curadoria | Granularidade das notas | Notas atômicas autossuficientes (segundo cérebro / enciclopédia pessoal): par Q&A, registro de entrega/conclusão ou input longo do usuário | Definição de preferências da Fase 3 | 2026-09-23 |
+| Curadoria | Filtragem de ruído | Descartar mensagens triviais/operacionais ("sim", "1", "prossiga"); incluir comandos reexecutáveis/consultáveis | Definição de preferências da Fase 3 | 2026-09-23 |
+| Curadoria | Categorização de diálogos | FAQs para Q&A geral; "Pair-Programming" / "pAIr-Programming" para interações de etapas de frameworks (Specsfy, MVPfy, etc.) | Definição de preferências da Fase 3 | 2026-09-23 |
+| Curadoria | Divisão de perguntas múltiplas | Separar em notas distintas quando não comprometer a compreensão; manter juntas se a separação prejudicar o contexto | Definição de preferências da Fase 3 | 2026-09-23 |
+| Curadoria | Estrutura de pastas | Estrutura totalmente plana na raiz de `vault/notas/` sem subpastas, aproveitando Live Queries e atributos do frontmatter no SilverBullet | Pergunta 2 de descoberta SPEC-0004 | 2026-09-23 |
+| Curadoria | Frontmatter YAML | tags, project (se aplicável), datas (criação e mensagem original), link para segmento original (`vault/segments/...`), link para notas complementares, source | Definição de preferências da Fase 3 | 2026-09-23 |
+| Curadoria | Diagramação de FAQ | Título curto; Pergunta resumida destacada; Resposta enxuta nível Jr em tópicos (sem prolixidade); divisor `---`; Pergunta completa; Resposta completa | Definição de preferências da Fase 3 | 2026-09-23 |
+| Curadoria | Diagramação de Pair-Programming | Título `<projeto> - <framework> - Pergunta <N>`; Pergunta resumida sem alternativas; Resposta escolhida + complemento humano; divisor `---`; Pergunta completa com alternativas | Definição de preferências da Fase 3 | 2026-09-23 |
+| Interface | Mecanismo de execução da curadoria | Abordagem híbrida: subcomando CLI `chats2notes curate` (em lote/cron com API key opcional) e rotina assistida no chat pelo agente de pair-programming | Pergunta 1 de descoberta SPEC-0004 | 2026-09-23 |
+| Curadoria | Nomenclatura de arquivos e colisão | Nomes em Title Case com espaços refletindo o título da nota; sufixo numérico de desambiguação `(2)` se houver colisão de títulos idênticos | Pergunta 3 de descoberta SPEC-0004 | 2026-09-23 |
+| Curadoria | Rastreamento e memória de descarte | Manifesto dedicado `vault/.curated.json` isolado de raw/sync, registrando segmentos avaliados, notas geradas e ruídos descartados com flag `--force` | Pergunta 4 de descoberta SPEC-0004 | 2026-09-23 |
+| IA e Integrações | Provedores de IA na CLI de curadoria | Suporte nativo via stdlib a Google Gemini API (`GEMINI_API_KEY`) e endpoints compatíveis com OpenAI/Ollama (`OPENAI_API_KEY`, `OPENAI_BASE_URL`) | Pergunta 5 de descoberta SPEC-0004 | 2026-09-23 |
+| Curadoria | Taxonomia e geração de tags | Vocabulário controlado a partir de lista base extensível de termos técnicos do projeto, unificando sinônimos e cunhando tags novas apenas para assuntos inéditos | Pergunta 6 de descoberta SPEC-0004 | 2026-09-23 |
+| Escopo | Estratégia de fatiamento da SPEC-0004 | Foco inicial no motor de curadoria, regras, prompts, diagramações (FAQ e Pair-Programming) e manifesto, deixando adaptadores de rede de provedores para refinamento posterior | Pergunta 7 de descoberta SPEC-0004 | 2026-09-23 |
 
 ## Uso pelo setup
 

@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from chats2notes.adapters.antigravity import AntigravityAdapter
+from chats2notes.curator import CuratorEngine
 from chats2notes.filter import WorkspaceFilter
 from chats2notes.models import ExtractionConfig
 from chats2notes.segmenter import TranscriptSegmenter
@@ -36,6 +37,14 @@ def build_parser() -> argparse.ArgumentParser:
     segment_parser.add_argument("--raw-dir", default="./vault/raw", help="Source directory containing raw transcripts (default: ./vault/raw)")
     segment_parser.add_argument("--segments-dir", default="./vault/segments", help="Destination directory for segmented pairs (default: ./vault/segments)")
     segment_parser.add_argument("--session", help="Optional specific session ID to segment")
+
+    # curate subcommand (Stage 4: Curadoria Inteligente & Notas Humanizadas)
+    curate_parser = subparsers.add_parser("curate", help="Curate segmented pairs into atomic humanized markdown notes")
+    curate_parser.add_argument("--segments-dir", default="./vault/segments", help="Source directory containing segmented pairs (default: ./vault/segments)")
+    curate_parser.add_argument("--notes-dir", default="./vault/notas", help="Destination directory for atomic notes (default: ./vault/notas)")
+    curate_parser.add_argument("--manifest-file", help="Path to curated manifest file (default: vault/.curated.json)")
+    curate_parser.add_argument("--project", help="Optional project name tag")
+    curate_parser.add_argument("--force", action="store_true", help="Reprocess all segments ignoring previously curated manifest")
 
     # extract subcommand (Stage 3: Incremental Markdown Generation)
     extract_parser = subparsers.add_parser("extract", help="Extract notes incrementally from agent logs")
@@ -130,6 +139,27 @@ def run_extract(args: argparse.Namespace) -> int:
     return 0
 
 
+def run_curate(args: argparse.Namespace) -> int:
+    """Executes intelligent curation and note synthesis."""
+    segments_dir = Path(args.segments_dir).expanduser()
+    notes_dir = Path(args.notes_dir).expanduser()
+    manifest_file = Path(args.manifest_file).expanduser() if getattr(args, "manifest_file", None) else None
+
+    engine = CuratorEngine(
+        segments_dir=segments_dir,
+        notes_dir=notes_dir,
+        manifest_file=manifest_file,
+        project_name=args.project,
+        force=args.force,
+    )
+
+    created_notes = engine.process_all()
+    count = len(created_notes)
+
+    print(f"Curadoria concluída: {count} novas notas salvas em '{notes_dir}'.")
+    return 0
+
+
 def run_status(args: argparse.Namespace) -> int:
     """Displays monitored sessions and current checkpoints."""
     state_file = Path(args.state_file).expanduser() if args.state_file else (Path.home() / ".chats2notes" / "state.json")
@@ -154,6 +184,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         return run_sync(args)
     elif args.command == "segment":
         return run_segment(args)
+    elif args.command == "curate":
+        return run_curate(args)
     elif args.command == "extract":
         return run_extract(args)
     elif args.command == "status":
