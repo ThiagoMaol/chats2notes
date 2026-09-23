@@ -10,7 +10,7 @@ from chats2notes.filter import WorkspaceFilter
 from chats2notes.models import ExtractionConfig
 from chats2notes.state import StateManager
 from chats2notes.storage import MarkdownStorage
-from chats2notes.sync import InboxSynchronizer
+from chats2notes.sync import RawSynchronizer
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -21,10 +21,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command")
 
-    # sync subcommand (Stage 1: Raw Inbox Synchronization)
-    sync_parser = subparsers.add_parser("sync", help="Synchronize raw agent transcripts to vault/inbox")
+    # sync subcommand (Stage 1: Raw Transcript Synchronization)
+    sync_parser = subparsers.add_parser("sync", help="Synchronize raw agent transcripts to vault/raw")
     sync_parser.add_argument("--brain-dir", action="append", help="Directory of agent brains (can specify multiple)")
-    sync_parser.add_argument("--inbox-dir", default="./vault/inbox", help="Destination directory for raw inbox transcripts")
+    sync_parser.add_argument("--raw-dir", "--inbox-dir", dest="raw_dir", default="./vault/raw", help="Destination directory for raw transcripts (default: ./vault/raw)")
     sync_parser.add_argument("--ignore-workspace", action="append", help="Workspace path to ignore (can specify multiple)")
     sync_parser.add_argument("--all-users", action="store_true", help="Scan multi-user directories in /home")
 
@@ -44,8 +44,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def run_sync(args: argparse.Namespace) -> int:
-    """Executes raw transcript synchronization to vault/inbox."""
-    inbox_dir = Path(args.inbox_dir).expanduser()
+    """Executes raw transcript synchronization to vault/raw."""
+    raw_dir = Path(args.raw_dir).expanduser()
 
     brain_paths = None
     if args.brain_dir:
@@ -56,7 +56,7 @@ def run_sync(args: argparse.Namespace) -> int:
 
     ignored_workspaces = args.ignore_workspace if args.ignore_workspace else []
     ws_filter = WorkspaceFilter(ignored_workspaces=ignored_workspaces)
-    synchronizer = InboxSynchronizer(inbox_dir)
+    synchronizer = RawSynchronizer(raw_dir=raw_dir)
 
     result = synchronizer.sync_all(sessions, workspace_filter=ws_filter)
 

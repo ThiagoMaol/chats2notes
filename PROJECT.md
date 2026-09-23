@@ -14,9 +14,10 @@ Desenvolvedores e engenheiros de software que utilizam agentes de CLI em servido
 
 ## Capacidades principais
 
-1. **Arquitetura em Duas Etapas**:
-   - **Etapa 1 (Sincronização Raw Inbox)**: O comando `chats2notes sync` copia com fidelidade integral e incremental os arquivos `transcript_full.jsonl` de cada sessão do `brain/` para `vault/inbox/<user>/<session_id>/`, servindo como fonte da verdade local e marca de referência.
-   - **Etapa 2 (Curadoria e Geração de Notas)**: Processamento posterior dos arquivos brutos do inbox para síntese de notas curadas em Markdown em `vault/notas/`.
+1. **Pipeline em Três Fases**:
+   - **Fase 1 (Sincronização Raw)**: O comando `chats2notes sync` copia com fidelidade integral e incremental os arquivos `transcript_full.jsonl` de cada sessão do `brain/` para `vault/raw/<user>/<session_id>/`. O diretório `vault/raw` é imutável para o processamento interno da aplicação, mas dinamicamente sincronizado com os brains externos quando um chat continuar ativo e crescer na fonte.
+   - **Fase 2 (Segmentação em Pares)**: Processamento determinístico via script puro (sem IA) que segmenta cada log do `vault/raw` em pares sequenciais de `[prompt do usuário] + [resposta da LLM]` com metadados e numeração ordenada.
+   - **Fase 3 (Curadoria e Geração de Notas Humanizadas)**: Síntese inteligente das notas em Markdown em `vault/notas/`, orientada pela skill `humanizer` para produzir texto direto, limpo e sem clichês de IA.
 2. **Filtro de Exclusão de Workspace**: Descarta automaticamente sessões cujo workspace coincida com o próprio repositório `chats2notes` ou com diretórios configurados em `--ignore-workspace`, prevenindo auto-ingestão e loops recursivos.
 3. **Leitura Incremental de Transcripts**: Monitora e extrai turnos completos de diálogo a partir de logs estruturados locais (`transcript_full.jsonl`).
 4. **Gerenciamento de Checkpoint**: Rastreia a marca d'água de leitura por sessão e agente em `state.json`, garantindo zero reprocessamento ou duplicação.
@@ -28,7 +29,7 @@ Desenvolvedores e engenheiros de software que utilizam agentes de CLI em servido
 1. Não é um serviço SaaS multi-inquilino nem requer autenticação web na versão 1.0 (é uma ferramenta local-first / CLI).
 2. Não altera nem remove os logs originais dos agentes de CLI (operação estritamente somente leitura nas fontes).
 3. Não controla a execução dos agentes externos, operando apenas sobre a persistência de suas trajetórias.
-4. O diretório `vault/` e seus subdiretórios (`inbox/`, `notas/`) são privados do usuário e estritamente ignorados no versionamento Git.
+4. O diretório `vault/` e seus subdiretórios (`raw/`, `notas/`, etc.) são privados do usuário e estritamente ignorados no versionamento Git.
 
 ## Backlog de ideias futuras
 

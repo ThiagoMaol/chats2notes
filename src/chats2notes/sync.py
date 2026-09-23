@@ -1,4 +1,4 @@
-"""Raw log inbox synchronizer."""
+"""Raw log synchronizer to vault/raw."""
 
 import json
 import os
@@ -20,19 +20,21 @@ class SyncResult:
     ignored: int = 0
 
 
-class InboxSynchronizer:
-    """Synchronizes exact raw transcripts to a local vault/inbox directory."""
+class RawSynchronizer:
+    """Synchronizes exact raw transcripts to a local vault/raw directory."""
 
-    def __init__(self, inbox_dir: Path):
-        self.inbox_dir = Path(inbox_dir)
+    def __init__(self, raw_dir: Optional[Path] = None, inbox_dir: Optional[Path] = None):
+        target = raw_dir or inbox_dir or Path("./vault/raw")
+        self.raw_dir = Path(target)
+        self.inbox_dir = self.raw_dir  # alias for backward compatibility
 
     def sync_session(self, session: SessionSummary) -> bool:
-        """Copies or updates the session raw files in the inbox atomically."""
+        """Copies or updates the session raw files in vault/raw atomically."""
         if not session.transcript_path or not session.transcript_path.exists():
             return False
 
         user_slug = session.host_user or "default"
-        dest_dir = self.inbox_dir / user_slug / session.session_id
+        dest_dir = self.raw_dir / user_slug / session.session_id
         dest_file = dest_dir / session.transcript_path.name
 
         src_stat = session.transcript_path.stat()
@@ -90,7 +92,7 @@ class InboxSynchronizer:
                 continue
 
             user_slug = session.host_user or "default"
-            dest_file = self.inbox_dir / user_slug / session.session_id / session.transcript_path.name
+            dest_file = self.raw_dir / user_slug / session.session_id / session.transcript_path.name
             already_existed = dest_file.exists()
 
             changed = self.sync_session(session)
@@ -103,3 +105,7 @@ class InboxSynchronizer:
                 result.skipped += 1
 
         return result
+
+
+# Compatibility alias
+InboxSynchronizer = RawSynchronizer

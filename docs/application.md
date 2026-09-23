@@ -21,7 +21,7 @@ Relação: relaciona cada arquivo observado à sua superfície.
 | Outras fontes | src/chats2notes/models.py | Turn, SessionSummary, ExtractionConfig |
 | Outras fontes | src/chats2notes/state.py | StateManager |
 | Outras fontes | src/chats2notes/storage.py | MarkdownStorage |
-| Outras fontes | src/chats2notes/sync.py | SyncResult, InboxSynchronizer |
+| Outras fontes | src/chats2notes/sync.py | SyncResult, RawSynchronizer |
 | Testes | tests/__init__.py | — |
 | Testes | tests/test_antigravity_adapter.py | TestAntigravityAdapter |
 | Testes | tests/test_cli.py | TestCLIIntegration |

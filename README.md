@@ -45,58 +45,71 @@ page where tag = "ai-notes" and agent = "antigravity" order by created desc rend
 
 ---
 
-## 🏗️ Arquitetura em Duas Etapas
+## 🏗️ Pipeline de Arquitetura
 
-O sistema opera em duas etapas complementares para garantir integridade e separação de responsabilidades:
+O sistema opera em fases complementares para garantir integridade, separação de responsabilidades e controle total:
 
 ```mermaid
 flowchart LR
-    subgraph Fontes ["Fontes (Adapters)"]
+    subgraph Fontes ["Fontes Externas (Adapters)"]
         A1["🟢 Antigravity CLI\n(~/.gemini/.../brain/)"]
         A2["🟡 AGY IDE / Outros CLIs"]
     end
 
-    subgraph Etapa1 ["Etapa 1: Sincronização Raw (chats2notes sync)"]
+    subgraph Fase1 ["Fase 1: Sincronização Raw (chats2notes sync)"]
         Flt["🛡️ Workspace Filter\n(ignora chats2notes e pastas customizadas)"]
-        Sync["⚡ InboxSynchronizer\n(cópia atômica e incremental)"]
-        Inbox["📦 vault/inbox/<user>/<session_id>/\n- transcript_full.jsonl\n- session_info.json"]
+        Sync["⚡ RawSynchronizer\n(cópia atômica e incremental)"]
+        Raw["📦 vault/raw/<user>/<session_id>/\n- transcript_full.jsonl\n- session_info.json"]
     end
 
-    subgraph Etapa2 ["Etapa 2: Curadoria & Notas (chats2notes extract / IA)"]
-        Curator["🤖 Curador / LLM"]
+    subgraph Fase2 ["Fase 2: Segmentação em Pares (script sem IA)"]
+        Split["✂️ Segmentador\n(pares prompt + resposta)"]
+        Inbox["📑 vault/inbox/ ou segmentos sequenciados\n(0001-..., 0002-...)"]
+    end
+
+    subgraph Fase3 ["Fase 3: Curadoria & Notas Humanizadas"]
+        Curator["🤖 Curador Humanizer\n(sem clichês de IA)"]
         Vault["📚 vault/notas/\n(Markdown para SilverBullet & Obsidian)"]
     end
 
     A1 & A2 --> Flt
     Flt --> Sync
-    Sync --> Inbox
+    Sync --> Raw
+    Raw --> Split
+    Split --> Inbox
     Inbox --> Curator
     Curator --> Vault
 ```
 
-### 1. Etapa 1: Sincronização Raw (`vault/inbox/`)
-- O comando `chats2notes sync` descobre sessões locais e copia os arquivos originais `transcript_full.jsonl` diretamente para `vault/inbox/<user>/<session_id>/`.
-- **Fonte da Verdade Local**: Mantém o log original íntegro sem qualquer pré-processamento destrutivo.
-- **Idempotência**: Compara tamanho de arquivos e metadados, transferindo somente novos bytes ou novas sessões.
-- **Filtro de Workspace**: Ignora automaticamente sessões do próprio repositório `chats2notes` e diretórios informados via `--ignore-workspace`, impedindo loops de auto-ingestão.
-- **Privacidade**: Todo o diretório `/vault/` é estritamente ignorado no `.gitignore`.
+### 1. Fase 1: Sincronização Raw (`vault/raw/`)
+- O comando `chats2notes sync` descobre sessões locais e copia os arquivos originais `transcript_full.jsonl` diretamente para `vault/raw/<user>/<session_id>/`.
+- **Fonte da Verdade Local e Imutabilidade Interna**: Os arquivos em `vault/raw` nunca são alterados pelas rotinas de curadoria, preservando o histórico bruto original.
+- **Sincronização Dinâmica com a Fonte**: Caso uma sessão externa continue sendo utilizada e aumente de tamanho no `brain/`, a execução do `chats2notes sync` atualiza atomicamente o arquivo correspondente em `vault/raw` para refletir o novo conteúdo.
+- **Idempotência**: Compara o tamanho de arquivos (`file_size`) e copia apenas novos bytes ou novas sessões.
+- **Filtro de Workspace**: Descarta automaticamente sessões do próprio workspace `chats2notes` e diretórios indicados via `--ignore-workspace`, prevenindo auto-ingestão e recursão.
+- **Privacidade Total**: O diretório `/vault/` é estritamente ignorado no `.gitignore`.
 
-### 2. Etapa 2: Curadoria e Geração de Notas (`vault/notas/`)
-- Lê os arquivos sincronizados a partir de `vault/inbox/`.
-- Extrai os turnos de diálogo, descarta ruídos operacionais e sintetiza notas estruturadas com YAML frontmatter.
+### 2. Fase 2: Segmentação Determinística em Pares
+- Script Python puro (sem chamadas de IA) que processa cada `transcript_full.jsonl` do `vault/raw/`.
+- Divide a conversa em segmentos de pares ordenados: `[prompt do usuário] + [resposta da LLM]`.
+- Gera arquivos numerados sequencialmente (ex: `0001-...md`, `0002-...md`) mantendo os metadados da sessão original.
+
+### 3. Fase 3: Curadoria e Geração de Notas Humanizadas (`vault/notas/`)
+- Síntese inteligente das conversas a partir dos segmentos.
+- Aplicação rigorosa das diretrizes da skill `humanizer` (`.agents/skills/humanizer/SKILL.md`), garantindo notas técnicas limpas, concisas e livres de vícios de escrita artificial.
 
 ---
 
 ## 🚀 Como Usar
 
-### 1. Sincronizar Logs Brutos para o Inbox Local
+### 1. Sincronizar Logs Brutos para o Raw Local
 ```bash
-# Sincronização padrão (descobre sessões e salva em vault/inbox)
+# Sincronização padrão (descobre sessões e salva em vault/raw)
 python3 -m chats2notes.cli sync
 
 # Especificando diretório personalizado e ignorando workspaces extras
 python3 -m chats2notes.cli sync \
-  --inbox-dir ./vault/inbox \
+  --raw-dir ./vault/raw \
   --ignore-workspace /caminho/do/projeto/privado \
   --all-users
 ```

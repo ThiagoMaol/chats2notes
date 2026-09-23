@@ -1,4 +1,4 @@
-# Especificação integrada: Sincronização de logs para vault inbox e filtro de workspace
+# Especificação integrada: Sincronização de logs para vault raw e filtro de workspace
 
 | Campo | Valor |
 | --- | --- |
@@ -8,7 +8,7 @@
 | Status | Complete |
 | Effort | 2 |
 | Effort updated at | 2026-09-23 |
-| Effort rationale | Sincronização de arquivos raw para inbox local e filtragem de workspace via stdlib Python. |
+| Effort rationale | Sincronização de arquivos raw para raw local e filtragem de workspace via stdlib Python. |
 | ClickUp Task | |
 | Milestones | M01 (MVP) |
 | Definition Gate | Passed |
@@ -24,18 +24,18 @@
 
 #### Problema
 
-Na arquitetura inicial, a extração gerava diretamente arquivos `.md` processados com notas pré-formatadas, sem manter os históricos brutos originais (`transcript_full.jsonl`) em uma pasta de entrada local (`vault/inbox/`) como fonte da verdade controlada. Além disso, sem filtros de exclusão por projeto, conversas de curadoria, administração ou desenvolvimento do próprio `chats2notes` poderiam ser capturadas, gerando duplicação recursiva e poluição na base de conhecimento.
+Na arquitetura inicial, a extração gerava diretamente arquivos `.md` processados com notas pré-formatadas, sem manter os históricos brutos originais (`transcript_full.jsonl`) em uma pasta de entrada local (`vault/raw/`) como fonte da verdade controlada. Além disso, sem filtros de exclusão por projeto, conversas de curadoria, administração ou desenvolvimento do próprio `chats2notes` poderiam ser capturadas, gerando duplicação recursiva e poluição na base de conhecimento.
 
 #### Resultado desejado
 
-Estabelecer a primeira etapa da arquitetura em duas fases:
-1. **Sincronização Raw Inbox**: O comando `chats2notes sync` copia com fidelidade integral e incremental os arquivos `transcript_full.jsonl` de cada sessão do `brain/` para `vault/inbox/<user>/<session_id>/transcript_full.jsonl`, servindo como fonte da verdade local e marca de referência.
+Estabelecer a primeira etapa da arquitetura em fases:
+1. **Sincronização Raw**: O comando `chats2notes sync` copia com fidelidade integral e incremental os arquivos `transcript_full.jsonl` de cada sessão do `brain/` para `vault/raw/<user>/<session_id>/transcript_full.jsonl`, servindo como fonte da verdade local e marca de referência. O diretório `vault/raw` é estritamente imutável para processamento interno, mas sincronizado dinamicamente com as fontes externas caso chats continuem ativos no brain.
 2. **Filtro de Exclusão de Workspace**: Permite ignorar automaticamente sessões cujo workspace coincida com o próprio repositório `chats2notes` ou com diretórios informados via `--ignore-workspace`.
 3. **Preservação de Ideias**: Registro das ideias de Blacklist de sessões e Deduplicação por Hash em documentação para marcos futuros.
 
 #### Métricas de sucesso
 
-- 100% dos transcripts de sessões elegíveis sincronizados em formato íntegro para `vault/inbox/`.
+- 100% dos transcripts de sessões elegíveis sincronizados em formato íntegro para `vault/raw/`.
 - 100% de exclusão de sessões cujo workspace corresponda aos caminhos ignorados.
 - Zero dependências externas adicionadas (100% Python Standard Library).
 - Idempotência absoluta: reexecuções consecutivas copiam apenas novos bytes ou sessões novas.
@@ -44,7 +44,7 @@ Estabelecer a primeira etapa da arquitetura em duas fases:
 
 #### Researchs executados
 
-- **R-001**: O formato `transcript_full.jsonl` do Antigravity CLI é appended continuamente a cada interação. Conclusão: a sincronização incremental para o inbox pode comparar tamanho de arquivo (`file_size`) e data de modificação (`mtime`), copiando somente quando há novos registros.
+- **R-001**: O formato `transcript_full.jsonl` do Antigravity CLI é appended continuamente a cada interação. Conclusão: a sincronização incremental para o raw pode comparar tamanho de arquivo (`file_size`) e data de modificação (`mtime`), copiando somente quando há novos registros.
 
 #### Fontes e contexto consultados
 
@@ -61,7 +61,7 @@ Estabelecer a primeira etapa da arquitetura em duas fases:
 
 #### Dúvidas respondidas
 
-- **Q**: Os arquivos no inbox devem ser modificados ou pré-processados? → **A**: Não. Devem ser cópias exatas dos arquivos brutos para manter a fonte da verdade intacta para curadorias posteriores.
+- **Q**: Os arquivos em vault/raw devem ser modificados ou pré-processados? → **A**: Não. Devem ser cópias exatas dos arquivos brutos para manter a fonte da verdade intacta para segmentação e curadorias posteriores. Internamente são imutáveis; externamente são sincronizados dinamicamente se o log crescer na fonte.
 - **Q**: O diretório `vault/` deve ser versionado no Git? → **A**: Não, deve ser explicitamente ignorado no `.gitignore` para proteger a privacidade das conversas do usuário.
 - **Q**: Como tratar as ideias de Blacklist de sessões e Deduplicação por Hash? → **A**: Devem ser registradas na documentação do projeto e backlog para avaliação em marcos futuros.
 
@@ -69,15 +69,15 @@ Estabelecer a primeira etapa da arquitetura em duas fases:
 
 #### Incluído
 
-- Módulo de sincronização incremental raw `InboxSynchronizer` copiando `transcript_full.jsonl` de `brain/` para `vault/inbox/`.
+- Módulo de sincronização incremental raw `RawSynchronizer` (com alias `InboxSynchronizer`) copiando `transcript_full.jsonl` de `brain/` para `vault/raw/`.
 - Módulo de filtragem `WorkspaceFilter` que avalia se a sessão pertence a um workspace proibido (ex: `chats2notes` ou informado por CLI).
-- Novo comando CLI `chats2notes sync` com opções `--brain-dir`, `--inbox-dir`, `--ignore-workspace` e `--all-users`.
+- Novo comando CLI `chats2notes sync` com opções `--brain-dir`, `--raw-dir` (alias `--inbox-dir`), `--ignore-workspace` e `--all-users`.
 - Inclusão do diretório `/vault/` no `.gitignore`.
 - Registro formal das ideias futuras (Blacklist e Deduplicação Hash) na documentação.
 
 #### Fora de escopo
 
-- Processamento por IA das notas dentro de `vault/inbox/` (reservado para a Etapa 2 de Curadoria).
+- Segmentação de pares e processamento por IA das notas (reservados para as fases seguintes).
 - Blacklist por ID de sessão ou deduplicação por hash de conteúdo (documentados para marcos futuros).
 
 #### Atores
@@ -88,7 +88,7 @@ Estabelecer a primeira etapa da arquitetura em duas fases:
 
 - **PR-001**: Biblioteca padrão exclusiva do Python 3 (zero dependências externas).
 - **PR-002**: Operações sobre `brain/` são estritamente somente leitura.
-- **PR-003**: Cópia atômica e segura no inbox (usando arquivos temporários ou write com flush antes de substituir).
+- **PR-003**: Cópia atômica e segura no raw (usando arquivos temporários ou write com flush antes de substituir).
 - **PR-004**: Idempotência de sincronização (não recopia arquivos idênticos).
 
 ### 5. Histórias de usuário
@@ -101,12 +101,12 @@ Como desenvolvedor que utiliza o Antigravity CLI, quero extrair turnos de conver
 **Teste independente**: Executar a CLI contra diretório de sessões e verificar a geração de arquivos .md.
 **Requisitos**: FR-001, FR-002, FR-003, NFR-001
 
-#### US-002 — Sincronização incremental para inbox e filtro de workspace (P1)
+#### US-002 — Sincronização incremental para raw e filtro de workspace (P1)
 
-Como desenvolvedor que utiliza o chats2notes, quero sincronizar os arquivos de log brutos do Antigravity para uma pasta local vault/inbox/ e ignorar conversas do workspace do chats2notes, para manter uma cópia íntegra local e evitar loops de auto-ingestão de chats administrativos.
+Como desenvolvedor que utiliza o chats2notes, quero sincronizar os arquivos de log brutos do Antigravity para uma pasta local vault/raw/ e ignorar conversas do workspace do chats2notes, para manter uma cópia íntegra local e evitar loops de auto-ingestão de chats administrativos.
 
-**Por que P1**: Estabelece a fonte da verdade local indispensável para a curadoria em duas etapas e previne duplicação recursiva.
-**Teste independente**: Executar `chats2notes sync` contra diretório com sessões variadas (incluindo workspace ignorado) e verificar que apenas as sessões elegíveis foram copiadas para `vault/inbox/`.
+**Por que P1**: Estabelece a fonte da verdade local indispensável para as fases seguintes de segmentação e curadoria, prevenindo duplicação recursiva.
+**Teste independente**: Executar `chats2notes sync` contra diretório com sessões variadas (incluindo workspace ignorado) e verificar que apenas as sessões elegíveis foram copiadas para `vault/raw/`.
 **Requisitos**: FR-004, FR-005, FR-006, NFR-002
 
 ### 6. Cenários BDD de aceite
@@ -163,7 +163,7 @@ Feature: Resiliência de logs
     Then as linhas válidas são extraídas
 ```
 
-#### AC-005 — Sincronização inicial de transcript bruto para vault/inbox
+#### AC-005 — Sincronização inicial de transcript bruto para vault/raw
 
 **Cobre**: US-002, FR-004, FR-005, FR-006, NFR-002
 
@@ -171,11 +171,11 @@ Feature: Resiliência de logs
 @US-002 @FR-004 @FR-005 @FR-006 @NFR-002 @AC-005
 Feature: Sincronização inicial de logs brutos
 
-  Scenario: Sincronizar sessão elegível para o inbox
+  Scenario: Sincronizar sessão elegível para o raw
     Given que existe uma sessão válida no diretório brain do Antigravity
     And o workspace da sessão não está na lista de workspaces ignorados
-    When o comando de sincronização para inbox for executado
-    Then uma cópia exata de transcript_full.jsonl deve existir em vault/inbox/<user>/<session_id>/
+    When o comando de sincronização para raw for executado
+    Then uma cópia exata de transcript_full.jsonl deve existir em vault/raw/<user>/<session_id>/
     And o conteúdo deve ser idêntico ao original
 ```
 
@@ -188,7 +188,7 @@ Feature: Sincronização inicial de logs brutos
 Feature: Idempotência de sincronização
 
   Scenario: Executar sincronização quando o log não mudou
-    Given que uma sessão já foi sincronizada anteriormente para vault/inbox
+    Given que uma sessão já foi sincronizada anteriormente para vault/raw
     And o arquivo transcript_full.jsonl original não sofreu alterações
     When o comando de sincronização for executado novamente
     Then nenhum arquivo deve ser recopiado desnecessariamente
@@ -206,7 +206,7 @@ Feature: Filtro de exclusão de workspace
   Scenario: Ignorar sessão pertencente ao workspace do chats2notes
     Given que existe uma sessão cujo workspace é a pasta do chats2notes
     When o comando de sincronização for executado com o filtro de workspace ativo
-    Then a sessão ignorada não deve ser sincronizada para vault/inbox
+    Then a sessão ignorada não deve ser sincronizada para vault/raw
     And nenhuma pasta para essa sessão deve ser criada no destino
 ```
 
@@ -222,7 +222,7 @@ Feature: Atualização incremental
     Given que uma sessão já foi sincronizada anteriormente
     And novas mensagens foram adicionadas ao final de transcript_full.jsonl no brain
     When o comando de sincronização for executado novamente
-    Then o arquivo em vault/inbox deve ser atualizado com as novas mensagens
+    Then o arquivo em vault/raw deve ser atualizado com as novas mensagens
     And a sincronização deve relatar 1 sessão atualizada
 ```
 
@@ -233,9 +233,9 @@ Feature: Atualização incremental
 - **FR-001**: O sistema deve descobrir automaticamente diretórios de sessões do Antigravity CLI e suportar múltiplos diretórios de perfis/usuários no mesmo host.
 - **FR-002**: O sistema deve ler incrementalmente os arquivos `transcript_full.jsonl` a partir da marca d'água persistida em `checkpoint.json`.
 - **FR-003**: O sistema deve gerar arquivos de notas em Markdown com YAML frontmatter enriquecido (`name`, `tags`, `agent`, `host_user`, `workspace`, `session`, `created`, `category`).
-- **FR-004**: O sistema deve sincronizar incrementalmente arquivos `transcript_full.jsonl` para o diretório de destino inbox preservando o identificador da sessão e do usuário host.
+- **FR-004**: O sistema deve sincronizar incrementalmente arquivos `transcript_full.jsonl` para o diretório de destino raw preservando o identificador da sessão e do usuário host.
 - **FR-005**: O sistema deve filtrar e descartar sessões cujo workspace corresponda a um workspace ignorado configurado (como `chats2notes` ou caminhos passados em `--ignore-workspace`).
-- **FR-006**: O sistema deve fornecer comando CLI `sync` dedicado (ou opção integrada) para executar a sincronização bruta para o inbox e exibir sumário operacional.
+- **FR-006**: O sistema deve fornecer comando CLI `sync` dedicado (ou opção integrada) para executar a sincronização bruta para o raw e exibir sumário operacional.
 
 #### Não funcionais
 
@@ -245,7 +245,7 @@ Feature: Atualização incremental
 #### Erros e casos-limite
 
 - Permissão de leitura negada em uma pasta de sessão → Registrar aviso no console e prosseguir com as demais sessões sem interromper o processo.
-- Diretório de inbox inexistente → Criar automaticamente os diretórios pais necessários.
+- Diretório de raw inexistente → Criar automaticamente os diretórios pais necessários.
 - Arquivo de origem bloqueado temporariamente por escrita do agente → Tratar exceções de IO e manter a versão anterior íntegra.
 
 ## Ato II — Projetar e provar
@@ -254,13 +254,13 @@ Feature: Atualização incremental
 
 #### Contexto existente
 
-A base atual em `src/chats2notes/` possui o leitor de sessões `AntigravityAdapter` e o ponto de entrada `cli.py`. Vamos introduzir a capacidade de sincronização de arquivos brutos para o inbox antes de qualquer processamento e o filtro de workspace.
+A base atual em `src/chats2notes/` possui o leitor de sessões `AntigravityAdapter` e o ponto de entrada `cli.py`. Vamos introduzir a capacidade de sincronização de arquivos brutos para o raw antes de qualquer processamento e o filtro de workspace.
 
 #### Arquitetura e módulos
 
 - `src/chats2notes/filter.py`: Classe `WorkspaceFilter` para correspondência de caminhos de workspace a ignorar.
-- `src/chats2notes/sync.py`: Classe `InboxSynchronizer` que coordena a cópia incremental segura de `transcript_full.jsonl` para `vault/inbox/<user>/<session_id>/`.
-- `src/chats2notes/cli.py`: Adição do comando `sync` com opções `--brain-dir`, `--inbox-dir`, `--ignore-workspace`, `--all-users`.
+- `src/chats2notes/sync.py`: Classe `RawSynchronizer` (com alias `InboxSynchronizer`) que coordena a cópia incremental segura de `transcript_full.jsonl` para `vault/raw/<user>/<session_id>/`.
+- `src/chats2notes/cli.py`: Adição do comando `sync` com opções `--brain-dir`, `--raw-dir` (alias `--inbox-dir`), `--ignore-workspace`, `--all-users`.
 
 #### Migrations
 
@@ -272,7 +272,7 @@ Não aplicável — persistência baseada em arquivos planos locais.
 
 #### Controllers e casos de uso
 
-- `SyncUseCase`: orquestra a descoberta, filtragem por workspace e sincronização para o inbox local.
+- `SyncUseCase`: orquestra a descoberta, filtragem por workspace e sincronização para o raw local.
 
 #### Views e experiência
 
@@ -302,9 +302,9 @@ tests/
 
 ### 9. Modelo de dados
 
-Estrutura de diretórios no Inbox:
+Estrutura de diretórios no Raw:
 ```text
-vault/inbox/
+vault/raw/
   └── <host_user>/
       └── <session_id>/
           ├── session_info.json (metadados: workspace, host_user, updated_at)
@@ -315,7 +315,7 @@ vault/inbox/
 
 Comando CLI adicionado:
 ```bash
-chats2notes sync [--brain-dir PATH] [--inbox-dir PATH] [--ignore-workspace PATH] [--all-users]
+chats2notes sync [--brain-dir PATH] [--raw-dir PATH] [--ignore-workspace PATH] [--all-users]
 ```
 
 ### 11. Estratégia TDD
@@ -444,7 +444,7 @@ chats2notes sync [--brain-dir PATH] [--inbox-dir PATH] [--ignore-workspace PATH]
 #### Dependências
 
 - Python 3.10+ stdlib.
-- Permissão de leitura nos diretórios `brain/` e de escrita em `vault/inbox/`.
+- Permissão de leitura nos diretórios `brain/` e de escrita em `vault/raw/`.
 
 #### Riscos
 
@@ -456,7 +456,7 @@ chats2notes sync [--brain-dir PATH] [--inbox-dir PATH] [--ignore-workspace PATH]
 
 ### 17. Decisões
 
-- **DEC-004**: Adoção de arquitetura em duas etapas: Etapa 1 realiza a sincronização pura dos arquivos brutos para `vault/inbox/`, enquanto a Etapa 2 realiza o processamento em notas para `vault/notas/`.
+- **DEC-004**: Adoção de arquitetura com repositório de entrada raw em `vault/raw/`, servindo como fonte da verdade íntegra e sincronizada dinamicamente com brains externos, para posterior segmentação em pares e curadoria em `vault/notas/`.
 - **DEC-005**: Exclusão ativa de sessões do workspace `chats2notes` e diretórios ignorados para impedir auto-ingestão e recursão.
 - **DEC-006**: Preservação das ideias de Blacklist de sessões e Deduplicação por Hash em backlog/documentação para marcos posteriores.
 
