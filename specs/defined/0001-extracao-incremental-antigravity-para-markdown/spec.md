@@ -5,13 +5,13 @@
 | Formato | Specsfy/2.0 |
 | ID | SPEC-0001 |
 | Slug | 0001-extracao-incremental-antigravity-para-markdown |
-| Status | Draft |
+| Status | Defined |
 | Effort | 3 |
 | Effort updated at | 2026-09-23 |
 | Effort rationale | Escopo bem delimitado em Python padrão (zero dependências), leitor JSONL, checkpoint atômico e templates Markdown. |
 | ClickUp Task | |
 | Milestones | M01 (MVP) |
-| Definition Gate | Pending |
+| Definition Gate | Passed |
 | Plan Gate | Pending |
 | Delivery Gate | Pending |
 | Evidence Contract | 1 |
@@ -403,9 +403,9 @@ category: "Engenharia de Software"
 
 #### Gate do Ato I — Definição
 
-- **Resultado**: Pending
-- **Comando**: `node .agents/skills/specsfy-04-validate/scripts/validate_spec.mjs specs/draft/0001-extracao-incremental-antigravity-para-markdown/spec.md --allow-draft`
-- **Achados**: Pending.
+- **Resultado**: Passed
+- **Comando**: `node .agents/skills/specsfy-04-validate/scripts/validate_spec.mjs specs/draft/0001-extracao-incremental-antigravity-para-markdown/spec.md`
+- **Achados**: Nenhum blocker. Formato rígido Specsfy/2.0 e cobertura BDD integral (US-001, FR-001..FR-003, NFR-001 cobertos por 4 ACs).
 
 #### Gate do Ato II — Plano
 
