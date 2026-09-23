@@ -5,14 +5,14 @@
 | Formato | Specsfy/2.0 |
 | ID | SPEC-0001 |
 | Slug | 0001-extracao-incremental-antigravity-para-markdown |
-| Status | Defined |
+| Status | Planned |
 | Effort | 3 |
 | Effort updated at | 2026-09-23 |
 | Effort rationale | Escopo bem delimitado em Python padrão (zero dependências), leitor JSONL, checkpoint atômico e templates Markdown. |
 | ClickUp Task | |
 | Milestones | M01 (MVP) |
 | Definition Gate | Passed |
-| Plan Gate | Pending |
+| Plan Gate | Passed |
 | Delivery Gate | Pending |
 | Evidence Contract | 1 |
 | Interface para pessoas | Não — ferramenta de linha de comando (CLI) e automação em segundo plano sem interface gráfica web |
@@ -373,10 +373,10 @@ category: "Engenharia de Software"
 
 | IDs | BDD de referência | Teste TDD informado pelo BDD | RED observado | GREEN observado | Refactor/regressão |
 | --- | --- | --- | --- | --- | --- |
-| US-001, FR-001, FR-002, FR-003, NFR-001, AC-001 | AC-001 na seção 6 | `tests/test_antigravity_adapter.py:TestAdapter.test_initial_extraction` | Pending | Pending | Pending |
-| US-001, FR-001, FR-002, FR-003, NFR-001, AC-002 | AC-002 na seção 6 | `tests/test_antigravity_adapter.py:TestAdapter.test_incremental_idempotence` | Pending | Pending | Pending |
-| US-001, FR-001, FR-002, FR-003, NFR-001, AC-003 | AC-003 na seção 6 | `tests/test_antigravity_adapter.py:TestAdapter.test_multi_user_discovery` | Pending | Pending | Pending |
-| US-001, FR-001, FR-002, FR-003, NFR-001, AC-004 | AC-004 na seção 6 | `tests/test_antigravity_adapter.py:TestAdapter.test_resilience_corrupted_jsonl` | Pending | Pending | Pending |
+| US-001, FR-001, FR-002, FR-003, NFR-001, AC-001 | AC-001 na seção 6 | `tests/test_antigravity_adapter.py:TestAntigravityAdapter.test_initial_extraction` | NotImplementedError (AntigravityAdapter.extract_new_turns) | Pending | Pending |
+| US-001, FR-001, FR-002, FR-003, NFR-001, AC-002 | AC-002 na seção 6 | `tests/test_antigravity_adapter.py:TestAntigravityAdapter.test_incremental_idempotence` | NotImplementedError (AntigravityAdapter.extract_new_turns) | Pending | Pending |
+| US-001, FR-001, FR-002, FR-003, NFR-001, AC-003 | AC-003 na seção 6 | `tests/test_antigravity_adapter.py:TestAntigravityAdapter.test_multi_user_discovery` | NotImplementedError (AntigravityAdapter.discover_sessions) | Pending | Pending |
+| US-001, FR-001, FR-002, FR-003, NFR-001, AC-004 | AC-004 na seção 6 | `tests/test_antigravity_adapter.py:TestAntigravityAdapter.test_resilience_corrupted_jsonl` | NotImplementedError (AntigravityAdapter.extract_new_turns) | Pending | Pending |
 
 ### 12. Plano de testes e rastreabilidade
 
@@ -404,46 +404,46 @@ category: "Engenharia de Software"
 #### Gate do Ato I — Definição
 
 - **Resultado**: Passed
-- **Comando**: `node .agents/skills/specsfy-04-validate/scripts/validate_spec.mjs specs/defined/0001-extracao-incremental-antigravity-para-markdown/spec.md`
+- **Comando**: `node .agents/skills/specsfy-04-validate/scripts/validate_spec.mjs specs/planned/0001-extracao-incremental-antigravity-para-markdown/spec.md`
 - **Achados**: Nenhum blocker. Formato rígido Specsfy/2.0 e cobertura BDD integral (US-001, FR-001..FR-003, NFR-001 cobertos por 4 ACs).
 
 #### Gate do Ato II — Plano
 
-- **Resultado**: Pending
-- **Comando**: `node .agents/skills/specsfy-05-tasks/scripts/validate_tasks.mjs specs/defined/0001-extracao-incremental-antigravity-para-markdown/spec.md --allow-draft`
-- **Achados**: Pending.
+- **Resultado**: Passed
+- **Comando**: `node .agents/skills/specsfy-05-tasks/scripts/validate_tasks.mjs specs/planned/0001-extracao-incremental-antigravity-para-markdown/spec.md`
+- **Achados**: Nenhum blocker. Todas as 3 tarefas TDD predecessores (T001, T002, T003) completas e com evidência RED observada, cobrindo integralmente todos os requisitos US-001, FR-001..FR-003, NFR-001 e AC-001..AC-004.
 
 #### Gate do Ato III — Entrega
 
 - **Resultado**: Pending
-- **Comando**: `node .agents/skills/specsfy-06-tdd-bdd/scripts/check_traceability.mjs specs/defined/0001-extracao-incremental-antigravity-para-markdown/spec.md .`
+- **Comando**: `node .agents/skills/specsfy-06-tdd-bdd/scripts/check_traceability.mjs specs/planned/0001-extracao-incremental-antigravity-para-markdown/spec.md .`
 - **Achados**: Pending.
 
 ### 14. Tarefas
 
-- [ ] T001 [TEST] [TDD] [US-001] Criar testes unitários para StateManager e atomicidade em tests/test_state.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003 — Depends: none
-  - [ ] **PREP**: Confirmar contratos de dados e chave composta de checkpoint.
-  - [ ] **EXECUTE**: Escrever casos de teste cobrindo criação, leitura e atomicidade.
-  - [ ] **VERIFY**: Executar teste e observar RED.
-  - [ ] **VISUAL**: Não aplicável — tarefa de teste e lógica sem interface visual.
-  - [ ] **EVIDENCE**: Registrar saída do teste e IDs cobertos.
-  - [ ] **IMPROVE**: Garantir limpeza de diretório temporário após cada teste.
+- [x] T001 [TEST] [TDD] [US-001] Criar testes unitários para StateManager e atomicidade em tests/test_state.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003 — Depends: none
+  - [x] **PREP**: Confirmar contratos de dados e chave composta de checkpoint.
+  - [x] **EXECUTE**: Escrever casos de teste cobrindo criação, leitura e atomicidade.
+  - [x] **VERIFY**: Executar teste e observar RED.
+  - [x] **VISUAL**: Não aplicável — tarefa de teste e lógica sem interface visual.
+  - [x] **EVIDENCE**: Registrar saída do teste e IDs cobertos.
+  - [x] **IMPROVE**: Garantir limpeza de diretório temporário após cada teste.
 
-- [ ] T002 [TEST] [TDD] [US-001] Criar testes unitários para AntigravityAdapter e parsing em tests/test_antigravity_adapter.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003, AC-004 — Depends: none
-  - [ ] **PREP**: Mapear amostras reais de transcripts JSONL do Antigravity.
-  - [ ] **EXECUTE**: Escrever casos de teste cobrindo descoberta mono/multi-usuário e resiliência a linhas inválidas.
-  - [ ] **VERIFY**: Executar teste e observar RED.
-  - [ ] **VISUAL**: Não aplicável — tarefa de teste de adaptador sem interface visual.
-  - [ ] **EVIDENCE**: Registrar saída do teste.
-  - [ ] **IMPROVE**: Refinar fixtures mockadas.
+- [x] T002 [TEST] [TDD] [US-001] Criar testes unitários para AntigravityAdapter e parsing em tests/test_antigravity_adapter.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003, AC-004 — Depends: none
+  - [x] **PREP**: Mapear amostras reais de transcripts JSONL do Antigravity.
+  - [x] **EXECUTE**: Escrever casos de teste cobrindo descoberta mono/multi-usuário e resiliência a linhas inválidas.
+  - [x] **VERIFY**: Executar teste e observar RED.
+  - [x] **VISUAL**: Não aplicável — tarefa de teste de adaptador sem interface visual.
+  - [x] **EVIDENCE**: Registrar saída do teste.
+  - [x] **IMPROVE**: Refinar fixtures mockadas.
 
-- [ ] T003 [TEST] [TDD] [US-001] Criar testes para Markdown Storage e YAML frontmatter em tests/test_storage.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003 — Depends: none
-  - [ ] **PREP**: Confirmar atributos requeridos para Live Queries do SilverBullet.
-  - [ ] **EXECUTE**: Escrever testes para escrita de arquivos .md e geração de frontmatter.
-  - [ ] **VERIFY**: Executar teste e observar RED.
-  - [ ] **VISUAL**: Não aplicável — teste de geração de arquivos Markdown sem interface visual.
-  - [ ] **EVIDENCE**: Registrar saída do teste.
-  - [ ] **IMPROVE**: Validar tratamento de caracteres especiais no YAML.
+- [x] T003 [TEST] [TDD] [US-001] Criar testes para Markdown Storage e YAML frontmatter em tests/test_storage.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003 — Depends: none
+  - [x] **PREP**: Confirmar atributos requeridos para Live Queries do SilverBullet.
+  - [x] **EXECUTE**: Escrever testes para escrita de arquivos .md e geração de frontmatter.
+  - [x] **VERIFY**: Executar teste e observar RED.
+  - [x] **VISUAL**: Não aplicável — teste de geração de arquivos Markdown sem interface visual.
+  - [x] **EVIDENCE**: Registrar saída do teste.
+  - [x] **IMPROVE**: Validar tratamento de caracteres especiais no YAML.
 
 - [ ] T004 [CODE] [US-001] Implementar models.py e state.py em src/chats2notes/state.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003 — Depends: T001, T002, T003
   - [ ] **PREP**: Confirmar classes Turn, Session e StateManager.
