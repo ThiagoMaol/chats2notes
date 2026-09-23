@@ -42,22 +42,25 @@ Ambiente local-first no Linux e Windows, utilizando biblioteca padrão do Python
 
 ## Comportamento esperado
 
-1. Localizar sessões ativas sob `~/.gemini/antigravity-cli/brain/<uuid>/`.
-2. Consultar `checkpoint.json` para obter o último `step_index` processado por sessão.
-3. Ler `transcript_full.jsonl` e extrair turnos de interação (`USER_INPUT` + `PLANNER_RESPONSE`) ocorridos após o checkpoint.
-4. Gerar arquivos Markdown estruturados no diretório de destino com metadados YAML enriquecidos.
-5. Gravar a nova marca d'água em `checkpoint.json` de forma atômica.
+1. Localizar sessões ativas do Antigravity CLI sob o diretório padrão do usuário (`~/.gemini/antigravity-cli/brain/<uuid>/`) ou através de múltiplos diretórios de perfis/usuários configurados no mesmo host.
+2. Identificar a autoria do chat (`host_user`) e o diretório de projeto/contexto (`workspace`) a partir dos dados da sessão.
+3. Consultar `checkpoint.json` com chave isolada por `(host_user, session_id)` para obter o último `step_index` processado.
+4. Ler `transcript_full.jsonl` e extrair turnos de interação (`USER_INPUT` + `PLANNER_RESPONSE`) ocorridos após o checkpoint.
+5. Gerar arquivos Markdown estruturados no diretório de destino com metadados YAML enriquecidos (`name`, `tags`, `agent`, `host_user`, `workspace`, `session`, `created`, `category`).
+6. Gravar a nova marca d'água em `checkpoint.json` de forma atômica e isolada por usuário.
 
 ## Regras de negócio
 
 - A leitura dos logs originais é estritamente somente leitura; nenhum arquivo sob `brain/` deve ser alterado ou removido.
 - Se uma sessão não tiver novos passos desde o último checkpoint, ela deve ser ignorada sem gerar notas vazias.
-- O formato do frontmatter gerado deve respeitar o schema compatível com Live Queries do SilverBullet (`name`, `tags`, `agent`, `session`, `created`, `category`).
+- O formato do frontmatter gerado deve respeitar o schema compatível com Live Queries do SilverBullet (`name`, `tags`, `agent`, `host_user`, `workspace`, `session`, `created`, `category`).
+- Checkpoints de diferentes usuários do mesmo host não devem colidir nem sobrescrever o progresso um do outro.
 
 ## Critérios de aceitação
 
 - Extração completa de múltiplos turnos em sessões novas.
 - Execução incremental idempotente: rodar duas vezes seguidas não duplica notas nem altera arquivos já gerados.
+- Suporte a escanear sessões de múltiplos usuários do mesmo host (`--brain-dir` múltiplo ou lista configurada) preservando `host_user` em cada nota.
 - Tratamento resiliente para transcripts parciais ou em andamento.
 - Validação por testes automatizados em `unittest` sem necessidade de instalar pacotes externos.
 
@@ -71,7 +74,7 @@ Ambiente local-first no Linux e Windows, utilizando biblioteca padrão do Python
 ## Dependências
 
 - Python 3.10+ com biblioteca padrão instalada no sistema.
-- Antigravity CLI com diretório `brain/` local acessível.
+- Antigravity CLI com diretório(s) `brain/` acessíveis para leitura no sistema de arquivos.
 
 ## Situações de erro
 
@@ -80,13 +83,14 @@ Ambiente local-first no Linux e Windows, utilizando biblioteca padrão do Python
 
 ## Escopo
 
-- Dentro: Descoberta de sessões, adaptador do Antigravity CLI, controle incremental via checkpoint, escrita de Markdown com YAML frontmatter e suíte de testes unitários.
+- Dentro: Descoberta de sessões (mono e multi-usuário no mesmo host), adaptador do Antigravity CLI, identificação de `host_user` e `workspace`, controle incremental via checkpoint composto, escrita de Markdown com YAML frontmatter e suíte de testes unitários.
 - Fora: Outros adaptadores de agentes (OpenCode, Claude Code, chats web) — estes permanecem no roadmap pós-MVP.
 
 ## Dúvidas, decisões e riscos
 
 - Decisão: Núcleo 100% Python padrão (zero dependências externas).
 - Decisão: Formato de notas otimizado nativamente para Spaces do SilverBullet e Vaults do Obsidian.
+- Decisão: Suporte nativo a agregar chats de múltiplos usuários no mesmo servidor Linux/Windows.
 
 ## Pronto para desenvolvimento
 
