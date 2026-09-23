@@ -404,24 +404,24 @@ category: "Engenharia de Software"
 #### Gate do Ato I — Definição
 
 - **Resultado**: Passed
-- **Comando**: `node .agents/skills/specsfy-04-validate/scripts/validate_spec.mjs specs/draft/0001-extracao-incremental-antigravity-para-markdown/spec.md`
+- **Comando**: `node .agents/skills/specsfy-04-validate/scripts/validate_spec.mjs specs/defined/0001-extracao-incremental-antigravity-para-markdown/spec.md`
 - **Achados**: Nenhum blocker. Formato rígido Specsfy/2.0 e cobertura BDD integral (US-001, FR-001..FR-003, NFR-001 cobertos por 4 ACs).
 
 #### Gate do Ato II — Plano
 
 - **Resultado**: Pending
-- **Comando**: `node .agents/skills/specsfy-05-tasks/scripts/validate_tasks.mjs specs/draft/0001-extracao-incremental-antigravity-para-markdown/spec.md`
+- **Comando**: `node .agents/skills/specsfy-05-tasks/scripts/validate_tasks.mjs specs/defined/0001-extracao-incremental-antigravity-para-markdown/spec.md --allow-draft`
 - **Achados**: Pending.
 
 #### Gate do Ato III — Entrega
 
 - **Resultado**: Pending
-- **Comando**: `node .agents/skills/specsfy-06-tdd-bdd/scripts/check_traceability.mjs specs/draft/0001-extracao-incremental-antigravity-para-markdown/spec.md .`
+- **Comando**: `node .agents/skills/specsfy-06-tdd-bdd/scripts/check_traceability.mjs specs/defined/0001-extracao-incremental-antigravity-para-markdown/spec.md .`
 - **Achados**: Pending.
 
 ### 14. Tarefas
 
-- [ ] T001 [TEST] [TDD] [US-001] Criar testes unitários para StateManager e atomicidade em tests/test_state.py — Refs: US-001, FR-002, NFR-001, AC-001, AC-002, AC-003 — Depends: none
+- [ ] T001 [TEST] [TDD] [US-001] Criar testes unitários para StateManager e atomicidade em tests/test_state.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003 — Depends: none
   - [ ] **PREP**: Confirmar contratos de dados e chave composta de checkpoint.
   - [ ] **EXECUTE**: Escrever casos de teste cobrindo criação, leitura e atomicidade.
   - [ ] **VERIFY**: Executar teste e observar RED.
@@ -429,7 +429,7 @@ category: "Engenharia de Software"
   - [ ] **EVIDENCE**: Registrar saída do teste e IDs cobertos.
   - [ ] **IMPROVE**: Garantir limpeza de diretório temporário após cada teste.
 
-- [ ] T002 [TEST] [TDD] [US-001] Criar testes unitários para AntigravityAdapter e parsing em tests/test_antigravity_adapter.py — Refs: US-001, FR-001, FR-002, NFR-001, AC-001, AC-002, AC-003, AC-004 — Depends: none
+- [ ] T002 [TEST] [TDD] [US-001] Criar testes unitários para AntigravityAdapter e parsing em tests/test_antigravity_adapter.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003, AC-004 — Depends: none
   - [ ] **PREP**: Mapear amostras reais de transcripts JSONL do Antigravity.
   - [ ] **EXECUTE**: Escrever casos de teste cobrindo descoberta mono/multi-usuário e resiliência a linhas inválidas.
   - [ ] **VERIFY**: Executar teste e observar RED.
@@ -437,43 +437,43 @@ category: "Engenharia de Software"
   - [ ] **EVIDENCE**: Registrar saída do teste.
   - [ ] **IMPROVE**: Refinar fixtures mockadas.
 
-- [ ] T003 [TEST] [TDD] [US-001] Criar testes para Markdown Storage e YAML frontmatter em tests/test_storage.py — Refs: US-001, FR-003, NFR-001, AC-001, AC-002, AC-003 — Depends: none
+- [ ] T003 [TEST] [TDD] [US-001] Criar testes para Markdown Storage e YAML frontmatter em tests/test_storage.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003 — Depends: none
   - [ ] **PREP**: Confirmar atributos requeridos para Live Queries do SilverBullet.
   - [ ] **EXECUTE**: Escrever testes para escrita de arquivos .md e geração de frontmatter.
   - [ ] **VERIFY**: Executar teste e observar RED.
-  - [ ] **VISUAL**: Não aplicável — teste de geração de arquivos Markdown.
+  - [ ] **VISUAL**: Não aplicável — teste de geração de arquivos Markdown sem interface visual.
   - [ ] **EVIDENCE**: Registrar saída do teste.
   - [ ] **IMPROVE**: Validar tratamento de caracteres especiais no YAML.
 
-- [ ] T004 [CODE] [US-001] Implementar models.py e state.py em src/chats2notes/ — Refs: US-001, FR-002, NFR-001, AC-001, AC-002, AC-003 — Depends: T001
+- [ ] T004 [CODE] [US-001] Implementar models.py e state.py em src/chats2notes/state.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003 — Depends: T001, T002, T003
   - [ ] **PREP**: Confirmar classes Turn, Session e StateManager.
   - [ ] **EXECUTE**: Codificar classes usando apenas a biblioteca padrão.
   - [ ] **VERIFY**: Executar tests/test_state.py e observar GREEN.
-  - [ ] **VISUAL**: Não aplicável — módulo de dados em backend.
+  - [ ] **VISUAL**: Não aplicável — módulo de dados em backend sem interface visual.
   - [ ] **EVIDENCE**: Registrar GREEN do teste.
   - [ ] **IMPROVE**: Validar persistência atômica com os.replace.
 
-- [ ] T005 [CODE] [US-001] Implementar base.py e antigravity.py em src/chats2notes/adapters/ — Refs: US-001, FR-001, FR-002, NFR-001, AC-001, AC-002, AC-003, AC-004 — Depends: T002, T004
+- [ ] T005 [CODE] [US-001] Implementar base.py e antigravity.py em src/chats2notes/adapters/antigravity.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003, AC-004 — Depends: T001, T002, T003, T004
   - [ ] **PREP**: Confirmar assinatura de BaseAdapter e lógica de parsing de JSONL.
   - [ ] **EXECUTE**: Implementar descoberta de sessões, multi-usuário e parsing resiliente.
   - [ ] **VERIFY**: Executar tests/test_antigravity_adapter.py e observar GREEN.
-  - [ ] **VISUAL**: Não aplicável — adaptador de linha de comando.
+  - [ ] **VISUAL**: Não aplicável — adaptador de linha de comando sem interface visual.
   - [ ] **EVIDENCE**: Registrar GREEN do teste.
   - [ ] **IMPROVE**: Adicionar suporte a caminhos expandidos via Path.home().
 
-- [ ] T006 [CODE] [US-001] Implementar storage.py e cli.py em src/chats2notes/ — Refs: US-001, FR-003, NFR-001, AC-001, AC-002, AC-003 — Depends: T003, T005
+- [ ] T006 [CODE] [US-001] Implementar storage.py e cli.py em src/chats2notes/storage.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003 — Depends: T001, T002, T003, T004, T005
   - [ ] **PREP**: Definir comandos argparse e formato do frontmatter YAML.
   - [ ] **EXECUTE**: Implementar escritor de notas e ponto de entrada da CLI.
   - [ ] **VERIFY**: Executar tests/test_storage.py e testes de integração CLI observando GREEN.
-  - [ ] **VISUAL**: Não aplicável — interface em linha de comando.
+  - [ ] **VISUAL**: Não aplicável — interface em linha de comando sem interface visual.
   - [ ] **EVIDENCE**: Registrar comando de execução e saída.
   - [ ] **IMPROVE**: Mensagens amigáveis de resumo no terminal.
 
-- [ ] T007 [TEST] Executar suíte completa de testes e conferência de rastreabilidade — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003, AC-004 — Depends: T004, T005, T006
+- [ ] T007 [TEST] Executar suíte completa de testes e conferência de rastreabilidade em tests/test_cli.py — Refs: US-001, FR-001, FR-002, FR-003, NFR-001, AC-001, AC-002, AC-003, AC-004 — Depends: T004, T005, T006
   - [ ] **PREP**: Verificar se todos os arquivos estão no lugar correto.
   - [ ] **EXECUTE**: Rodar `PYTHONPATH=src python3 -m unittest discover tests`.
   - [ ] **VERIFY**: Confirmar 100% de testes passando sem erros.
-  - [ ] **VISUAL**: Não aplicável.
+  - [ ] **VISUAL**: Não aplicável — suíte de testes de terminal sem interface visual.
   - [ ] **EVIDENCE**: Registrar saída de sucesso dos testes.
   - [ ] **IMPROVE**: Garantir zero dependências externas no código.
 
