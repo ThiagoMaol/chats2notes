@@ -72,7 +72,7 @@ O desenvolvedor dispõe do motor de curadoria e do subcomando CLI `chats2notes c
 
 #### Artefatos de pesquisa armazenados
 
-- `specs/draft/0004-curadoria-e-notas-humanizadas/research/silverbullet/`: Convenções de Live Queries e atributos frontmatter do SilverBullet para notas autossuficientes.
+- `specs/completed/0004-curadoria-e-notas-humanizadas/research/silverbullet/`: Convenções de Live Queries e atributos frontmatter do SilverBullet para notas autossuficientes.
 
 #### Dúvidas respondidas
 
